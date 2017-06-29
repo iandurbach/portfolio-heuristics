@@ -195,8 +195,8 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
                                        Ci = c(my_BC$Ci,my_BC_neg$Ci),
                                        budget = my_budget)
 
- my_dom_eval <- apply(my_dom$final_z, FUN = evaluate_z, MARGIN = 1, ipp = ipp, bp  = my_bp, Bi = Bi, 
-             cp = my_cp, Ci = Ci, budget = my_budget) 
+ my_dom_eval <- apply(my_dom$final_z, FUN = evaluate_z, MARGIN = 1, ipp = c(my_ipp,my_ipp_neg), bp  = my_bp, Bi = c(my_BC$Bi,my_BC_neg$Bi), 
+             cp = my_cp, Ci = c(my_BC$Ci,my_BC_neg$Ci), budget = my_budget) 
  
  #my_dom_benefit = unlist(lapply(my_dom_eval, FUN= benefit))
  #order(cueValidity(cp, bp, budget))

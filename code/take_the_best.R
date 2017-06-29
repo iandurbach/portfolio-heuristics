@@ -29,7 +29,6 @@ take_the_best = function(nCV,ipp,bp,Bi,cp,Ci,budget){
 
   # order alternatives by cost/benefit ratio
   cb_ratio = cp/bp
-  cb_ratio[my_z == 1] = 100000000 #alternatives already in portfolio come last!
   alts = sort.int(cb_ratio,index.return = T)$ix
   
   
@@ -80,7 +79,7 @@ greedy_value = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   
   # order alternatives by benefit ratio
   cb_ratio = bp
-  alts = sort.int(cb_ratio,index.return = T)$ix
+  alts = sort.int(-cb_ratio,index.return = T)$ix
   
   # generate TTB portfolio
   i = 1
@@ -134,6 +133,7 @@ greedy_cost = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   
   n = length(bp)
   
+  browser()
   # order alternatives by cost
   cb_ratio = cp
   alts = sort.int(cb_ratio,index.return = T)$ix

@@ -81,7 +81,7 @@ solve_portfolio = function(ipp,order_int_proj,bp,Bi,cp,Ci,budget,max=TRUE){
   #lp = lp(objective.in = obj, const.mat = mat, all.int = T, all.bin = T, const.dir = dir, const.rhs = rhs, direction = direction)
   lp = Rglpk_solve_LP(obj = obj, mat = mat, dir = dir, rhs = rhs, max = max, types = rep("B",length(obj)))
   #print(lp)
-  output$solution = lp$solution  
-  output$objval = lp$optimum
-  return(output)
+  lp$solution = lp$solution  
+  lp$objval = lp$optimum
+  return(lp)
 }
