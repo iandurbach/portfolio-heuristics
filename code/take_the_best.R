@@ -133,7 +133,6 @@ greedy_cost = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   
   n = length(bp)
   
-  browser()
   # order alternatives by cost
   cb_ratio = cp
   alts = sort.int(cb_ratio,index.return = T)$ix

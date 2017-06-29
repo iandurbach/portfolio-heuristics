@@ -1,4 +1,4 @@
-run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "equal", random_nested = 0, interaction_pool = 10, my_bp = NULL, my_cp = NULL){  
+run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "equal", random_nested = 0, interaction_pool = 10, my_bp = NULL, my_cp = NULL, my_gamma){  
   ################################
   ######## enter user data
   ################################
@@ -12,9 +12,9 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   # B_k = bonus_add + bonus_mult * mean benefit of projects in I_k
   # NOTE: in paper, I've removed reference to multiplier -- additive effects only
   my_alpha = my_alpha # additive effect for benefits
-  my_gamma = c(0,0,0,0,0) # multiplicative effect for benefits
-  my_beta = c(0,0,0,0,0) # additive effect for costs
-  my_phi = c(0,0,0,0,0) # multiplicative effect for costs
+  my_gamma = my_gamma # multiplicative effect for benefits
+  my_beta = c(0,0,0,0,0,0) # additive effect for costs
+  my_phi = c(0,0,0,0,0,0) # multiplicative effect for costs
   my_selprobs = my_selprob # one of "equal", "prop", "invprop"
   # for negatively related projects
   my_nint_neg = 8    # size of subset of related projects
@@ -262,7 +262,7 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   PL_rvpmax = (v_rvpmax-v_znad) / (v_zopt - v_znad)
   
     # collect inputs and outputs
-  inputs = c(n,my_nCV,my_budget,my_alpha[1],my_selprob,random_nested, interaction_pool)
+  inputs = c(n,my_nCV,my_budget,my_alpha[1],my_gamma[1],my_selprob,random_nested, interaction_pool)
   outputs = c(v_zopt,v_znad,v_zrand,v_zttb,v_dom,v_greedy_netvalue,v_greedyvalue,v_greedycost,v_mvpmax, v_lvpmax, v_rvpmax, PL_zopt,PL_znad,PL_zrand,PL_zttb,PL_zdom,PL_greedy_netvalue,PL_greedyvalue,PL_greedycost,PL_mvpmax, PL_lvpmax, PL_rvpmax)
   return(c(inputs,outputs))
 }

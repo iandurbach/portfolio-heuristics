@@ -22,19 +22,23 @@ Xall = rbind(Xall, cbind(read.csv("results/base_context_3a_uni.csv"), data = "un
 Xall = rbind(Xall, cbind(read.csv("results/base_context_3b_uni.csv"), data = "uniform"))
 Xall = rbind(Xall, cbind(read.csv("results/base_context_3c_uni.csv"), data = "uniform"))
 
-normalized <- Xall[c(1,2,3,4,5,6,7,8,20,21,22,23,24,25,26,27,28,29,30, 31)]
-normalized <- melt(normalized, id = c("X", "nproj", "nCV", "budget", "my_alpha","my_selprob","random_nested", "interaction_pool", "data"))
+normalized <- Xall[c(1,2,3,4,5,6,7,8,9,21,22,23,24,25,26,27,28,29,30,32)]
+normalized <- melt(normalized, id = c("X", "nproj", "nCV", "budget", "my_alpha", "my_gamma","my_selprob", "random_nested", "interaction_pool", "data"))
 
-absolute <- Xall[c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16, 17, 18,19, 31)]#Absolute values
-absolute <- melt(absolute, id = c("X", "nproj", "nCV", "budget", "my_alpha","my_selprob","random_nested", "interaction_pool", "data"))
+absolute <- Xall[c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16, 17, 18,19,20,32)]#Absolute values
+absolute <- melt(absolute, id = c("X", "nproj", "nCV", "budget", "my_alpha", "my_gamma","my_selprob","random_nested", "interaction_pool", "data"))
 
 dat <- rbind(mutate(normalized, normalized = "Normalized"), mutate(absolute, normalized = "Absolute"))
 dat$budget <- round(dat$budget, 2)
 dat$variable<- renameModels(dat$variable)
-dat$my_alpha = revalue(factor(dat$my_alpha), c("0"="No Interactions", "3"="With Interactions"))
+dat$my_alpha = revalue(factor(dat$my_alpha), c("0"="No Additive Interactions", "3"="With Additive Interactions"))
+dat$my_gamma = revalue(factor(dat$my_gamma), c("0"="No Multiplicative Interactions", "1"="Low Multiplicative Interactions", "2"="High Multiplicative Interactions"))
+
 dat$random_nested = revalue(factor(dat$random_nested), c("0"="RANDOM", "1"="NESTED"))
 dat$my_selprob = revalue(factor(dat$my_selprob), c("1"="NEUTRAL", "2"="GOODISH", "3"="POORISH"))
 
+
+#############################################
 #### With vs Without Interactions ####
 uniform <- subset(dat, data == "uniform")
 grouped = uniform %>% group_by(my_alpha, normalized, variable, budget) %>% summarize(meanv = mean(value), se = se(value))
