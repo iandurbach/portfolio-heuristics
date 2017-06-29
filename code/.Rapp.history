@@ -1,0 +1,60 @@
+hello
+l = 1
+l
+defaults write org.R-project.R force.LANG en_US.UTF-8
+library(Benchmarking)
+library(fear)
+library(FEAR)
+getwd()
+es
+install.packages("lsmeans")
+library(lsmeans)
+x=c(0,1,2,3,4,5)
+y=2*x
+plot(x,y)
+help(cos)
+install.packages("minpack.lm")
+install.packages("EBimage")
+install.packages("EBImage")
+options("repos"=c(CRAN="@CRAN@"))
+2+2
+install.packages("minpack.lm")
+fds=3
+fds*2
+install.packages("pwr")
+library(hitandrun)#
+library(smaa)#
+#
+setwd("/Users/iandurbach/Documents/Research/120124_JonPapers/SimPaper/2015/revision2/code/")#
+source('ApplyErrors.r')#
+source('ApplyMAUT.r') #
+source('Generate.r')#
+source('OutputMeasures.r')#
+source('SMAA-Boot.r')#
+source('SMAA1.r')#
+source('SMAA2.r')#
+source('SMAA3.r')#
+source('SMAA4.r')#
+#source('Weights.r')#
+#source('Weights_R2.r')#
+source('Weights_incr_order.r')#
+source('SimWR_2.r')#
+#
+####################################################################
+# k is number of "scenarios" used in generation of attribute values#
+# runs is number of SMAA runs#
+# sims is number of simulations run at each combination of parameter values#
+#
+K <<- 15000#
+nd <<- "T"#
+runs <<- 10000#
+sims <<- 500#
+simname <<- date()#
+identifier <<- "run_sim_WR_new_inc_2"#
+thin.f <<- 10#
+u_c <<- 0#
+#
+t1=Sys.time()#
+runsimWR(K=K,nd=nd,runs=runs,sims=sims,simname=simname,identifier=identifier)#
+t2=Sys.time()#
+Timer=t2-t1
