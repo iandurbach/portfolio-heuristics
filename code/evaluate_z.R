@@ -34,5 +34,4 @@ evaluate_z = function(z,ipp,bp,Bi,cp,Ci,budget)
   feasible = ifelse(cost<=budget,1,0)
   
   return(list(benefit=benefit,cost=cost,feasible=feasible,g=g))
-  
 }

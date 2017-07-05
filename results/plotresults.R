@@ -7,6 +7,9 @@ library("gridExtra")
 
 load("results/dat.RData")
 
+se <- function(x)
+  se=sd(x)/sqrt(length(x))
+
 #############################################
 #### With vs Without Interactions ####
 uniform <- subset(dat, data == "uniform")
@@ -45,3 +48,5 @@ grouped = pos %>% group_by(random_nested, my_selprob, variable, budget) %>% summ
 p = ggplot(grouped, aes(x = budget, y = meanv, colour = variable)) + geom_line() + geom_point() + facet_wrap(my_selprob~random_nested, scales="free")
 p = p + geom_errorbar(grouped, mapping = aes(x = budget, ymin = meanv - se, ymax = meanv + se, colour = variable), size = 0.4, width=0.01)
 p
+
+

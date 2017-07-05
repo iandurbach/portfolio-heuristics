@@ -65,7 +65,7 @@ runAllExperiments <- function(numdatasets){
     budgets <- c(sum(x$cost)/5,sum(x$cost)/4,sum(x$cost)/3,sum(x$cost)/2,sum(x$cost)*2/3)
     relative_budgets = round(c(0.05, 0.1, 1/5,1/4,1/3,1/2,2/3),2)
     my_alphas <- c(3)
-    my_gammas <- c(0,1,2)
+    my_gammas <- c(0, 0.5, 1)
     selprob <- c("equal","prop","invprop")
     interaction_pool <- c(10)
     random_nested = c(1)
@@ -89,7 +89,7 @@ runAllExperiments <- function(numdatasets){
     selprob <- c("equal","prop","invprop")
     interaction_pool <- c(10)
     my_alphas <- c(3)
-    my_gammas <- c(0,1,2)
+    my_gammas <- c(0, 0.5, 1)
     random_nested = c(0)
     all_res <- rbind(all_res, runSimulation(nproj, nCV, budgets, relative_budgets, my_alphas = my_alphas, random_nested = random_nested, my_selprob = selprob, interaction_pool = interaction_pool, my_bp = my_bp, my_cp = my_cp, my_gamma = my_gammas))
   }
@@ -112,7 +112,7 @@ runAllExperiments <- function(numdatasets){
     selprob <- c("equal")
     interaction_pool <- c(10)
     my_alphas <- c(0)
-    my_gammas <- c(0,1,2)
+    my_gammas <- c(0, 0.5, 1)
     random_nested = c(0)
     all_res <- rbind(all_res, runSimulation(nproj, nCV, budgets, relative_budgets, my_alphas = my_alphas, random_nested = random_nested, my_selprob = selprob, interaction_pool = interaction_pool, my_bp = my_bp, my_cp = my_cp, my_gamma = my_gammas))
   }
@@ -164,12 +164,12 @@ runSimulation <- function(nproj, nCV, budgets,relative_budgets, my_alphas = c(0)
 #
 filepath = "data/pos_skew_data_"
 suffix = "psk"
-runAllExperiments(50)
+runAllExperiments(5)
 filepath = "data/neg_skew_data_"
 suffix = "neg"
-runAllExperiments(50)
+runAllExperiments(5)
 filepath = "data/uniform_data_"
 suffix = "uni"
-runAllExperiments(50)
+runAllExperiments(5)
 
 source("results/makedata.R")

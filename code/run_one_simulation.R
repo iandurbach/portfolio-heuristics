@@ -96,7 +96,10 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
                               cp = my_cp,
                               Ci = c(my_BC$Ci,my_BC_neg$Ci),
                               budget = my_budget)
-
+  
+  #eval = evaluate_z(my_optsol$solution[1:n], ipp=c(my_ipp,my_ipp_neg), bp = my_bp,  cp = my_cp, Bi = c(my_BC$Bi,my_BC_neg$Bi), Ci = c(my_BC$Ci,my_BC_neg$Ci), budget = my_budget)
+  #print(eval)
+  #print(my_budget)
   #my_optsol
   # solve a MILP to get nadir portfolio
   #print("nadsol")
@@ -138,6 +141,10 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
                          cp = my_cp,
                          Ci = c(my_BC$Ci,my_BC_neg$Ci),
                          budget = my_budget)
+  
+  if(greedy_netvalue$benefit > my_optsol$objval){browser()}
+  
+
 
   mvp_max = mvp_max(nCV = my_nCV,
                     ipp=c(my_ipp,my_ipp_neg),
