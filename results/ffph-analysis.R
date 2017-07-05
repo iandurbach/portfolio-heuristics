@@ -1,5 +1,6 @@
 library(tidyverse)
 library(xtable)
+library(forcats)
 
 load("results/dat.RData")
 

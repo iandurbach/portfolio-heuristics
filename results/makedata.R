@@ -32,4 +32,4 @@ dat$my_alpha = revalue(factor(dat$my_alpha), c("0"="No Interactions", "3"="With 
 dat$random_nested = revalue(factor(dat$random_nested), c("0"="Random", "1"="Nested"))
 dat$my_selprob = revalue(factor(dat$my_selprob), c("1"="Neutral", "2"="Goodish", "3"="Poorish"))
 
-save(dat,file = "results/dat.RData")
+save(dat, file = "results/dat.RData")
