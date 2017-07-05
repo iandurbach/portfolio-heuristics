@@ -164,10 +164,12 @@ runSimulation <- function(nproj, nCV, budgets,relative_budgets, my_alphas = c(0)
 #
 filepath = "data/pos_skew_data_"
 suffix = "psk"
-runAllExperiments(5)
+runAllExperiments(50)
 filepath = "data/neg_skew_data_"
 suffix = "neg"
-runAllExperiments(5)
+runAllExperiments(50)
 filepath = "data/uniform_data_"
 suffix = "uni"
-runAllExperiments(5)
+runAllExperiments(50)
+
+source("results/makedata.R")
