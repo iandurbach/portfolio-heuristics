@@ -29,11 +29,11 @@ compute_interdependent_BC = function(ipp,bp,cp,alpha,gamma,beta,phi){
   {
     for(j in 1:n_int_proj[i])
     {
-      # multiplicative benefit multiplies by the mean of the individual project 
+      # multiplicative benefit multiplies by the sum of all projects project 
       # benefits
-      size_synergy = mean(bp[ipp[[i]][,j]])  
+      size_synergy =  sum(bp[ipp[[i]][,j]])  
       # compute benefit
-      Bi[k] = alpha[i] + (gamma[i] * size_synergy)
+      Bi[k] = alpha[i] + (gamma[i] / length(bp[ipp[[i]][,j]]) * size_synergy)
       k = k + 1
     }
   }

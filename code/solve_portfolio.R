@@ -83,5 +83,6 @@ solve_portfolio = function(ipp,order_int_proj,bp,Bi,cp,Ci,budget,max=TRUE){
   #print(lp)
   lp$solution = lp$solution  
   lp$objval = lp$optimum
-  return(lp)
+  return (lp)
+  #return(lp)
 }
