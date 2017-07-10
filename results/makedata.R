@@ -27,7 +27,7 @@ absolute <- melt(absolute, id = c("X", "nproj", "nCV", "budget", "my_alpha", "my
 dat <- rbind(mutate(normalized, normalized = "Normalized"), mutate(absolute, normalized = "Absolute"))
 dat$budget <- round(dat$budget, 2)
 dat$variable<- renameModels(dat$variable)
-dat$my_alpha = revalue(factor(dat$my_alpha), c("0"="No Interactions", "3"="With Interactions"))
+dat$my_alpha = revalue(factor(dat$my_alpha), c("0"="No Interactions", "3"="Low Interactions", "6"="High Interactions"))
 dat$my_gamma = revalue(factor(dat$my_gamma), c("0"="No Multiplicative Interactions", "0.5"="Low Multiplicative Interactions", "1"="High Multiplicative Interactions"))
 dat$random_nested = revalue(factor(dat$random_nested), c("0"="Random", "1"="Nested"))
 dat$my_selprob = revalue(factor(dat$my_selprob), c("1"="Neutral", "2"="Goodish", "3"="Poorish"))
