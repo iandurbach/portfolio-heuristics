@@ -15,6 +15,29 @@ source("code/take_the_best.r")
 source("code/dominance.R")
 source("code/run_one_simulation.r")
 
+runExperiments <- function(numdatasets){
+  ### INTERACTIONS 1
+  all_res <- c()
+  for(i in 1:numdatasets){
+    print(paste("dataset:",i))
+    x <- read.csv(file = paste(filepath,i,".csv", sep = ""))
+    my_bp <- x$value
+    my_cp <- x$cost
+    nproj <- c(50)
+    nCV <- c(3)
+    budgets <- c(sum(x$cost)/5,sum(x$cost)/4,sum(x$cost)/3,sum(x$cost)/2,sum(x$cost)*2/3)
+    relative_budgets = round(c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),2)
+    my_alphas <- c(0,3,6)
+    my_gammas <- c(0, 0.5, 1)
+    selprob <- c("equal","prop","invprop")
+    interaction_pool <- c(10)
+    random_nested = c(0, 1)
+    all_res <- rbind(all_res, runSimulation(nproj, nCV, budgets, relative_budgets, my_alphas = my_alphas, random_nested = random_nested, my_selprob = selprob, interaction_pool = interaction_pool, my_bp = my_bp, my_cp = my_cp, my_gamma = my_gammas))
+  }
+  colnames(all_res) = c("nproj","nCV","budget","my_alpha","my_gamma","my_selprob","random_nested","interaction_pool","opt","min","rand","ttb","dom","greedynet","greedyvalue","greedycost", "mvpmax","lvpmax","rvpmax",
+                        "opt_nor","min_nor","rand_nor","ttb_nor","dom_nor","greedynet_nor","greedyvalue_nor", "greedycost_nor", "mvpmax_nor", "lvpmax_nor", "rvpmax_nor")
+  write.csv(all_res, paste("results/all_", suffix, ".csv", sep = ""))
+}
 
 ### BASE CONTEXT 1
 runAllExperiments <- function(numdatasets){
@@ -164,12 +187,12 @@ runSimulation <- function(nproj, nCV, budgets,relative_budgets, my_alphas = c(0)
 #
 filepath = "data/pos_skew_data_"
 suffix = "psk"
-runAllExperiments(100)
+runExperiments(100)
 filepath = "data/neg_skew_data_"
 suffix = "neg"
-runAllExperiments(100)
+runExperiments(100)
 filepath = "data/uniform_data_"
 suffix = "uni"
-runAllExperiments(100)
+runExperiments(100)
 
 source("results/makedata.R")
