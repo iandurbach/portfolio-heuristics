@@ -25,7 +25,7 @@ runExperiments <- function(numdatasets){
     my_cp <- x$cost
     nproj <- c(50)
     nCV <- c(3)
-    budgets <- c(sum(x$cost)/5,sum(x$cost)/4,sum(x$cost)/3,sum(x$cost)/2,sum(x$cost)*2/3)
+    budgets <- sum(x$cost) * round(c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),2)
     relative_budgets = round(c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),2)
     my_alphas <- c(0,3,6)
     my_gammas <- c(0, 0.5, 1)
@@ -147,7 +147,7 @@ runAllExperiments <- function(numdatasets){
 
 
 ##FUNCTION:
-runSimulation <- function(nproj, nCV, budgets,relative_budgets, my_alphas = c(0), my_selprob = "equal", random_nested = 0, interaction_pool = 10, my_bp, my_cp, my_gamma = c(0)){
+runSimulation <- function(nproj, nCV, budgets, relative_budgets, my_alphas = c(0), my_selprob = "equal", random_nested = 0, interaction_pool = 10, my_bp, my_cp, my_gamma = c(0)){
   pars = expand.grid(nproj= nproj, nCV = nCV, budget = budgets, selprob = my_selprob, alpha = my_alphas, random_nested = random_nested, interaction_pool = interaction_pool, gamma = my_gamma)
   
   nruns = nrow(pars) # number of parameter combinations
