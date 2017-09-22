@@ -3,15 +3,15 @@ library(lpSolve)
 
 #setwd("/Users/iandurbach/Documents/Research/150306_PortfolioHeuristics/")
 
-source("code/generate_project_data.r")
-source("code/compute_selection_probs.r")
-source("code/create_interdependencies.r")
-source("code/compute_interdependent_BC.r")
-source("code/solve_portfolio.r")
-source("code/evaluate_z.r")
-source("code/construct_random_portfolios.r")
-source("code/take_the_best.r")
-source("dominance.R")
+source("code/generate_project_data.R")
+source("code/compute_selection_probs.R")
+source("code/create_interdependencies.R")
+source("code/compute_interdependent_BC.R")
+source("code/solve_portfolio.R")
+source("code/evaluate_z.R")
+source("code/construct_random_portfolios.R")
+source("code/take_the_best.R")
+source("code/dominance.R")
 
 ################################
 ######## enter user data

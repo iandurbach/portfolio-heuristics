@@ -215,7 +215,7 @@ domBased = function(nCV,ipp,nor_bp,bp,Bi,nor_cp,cp,Ci,budget, domFunction = domi
   cost = final_res$cost 
   feasible = final_res$feasible
   g = final_res$g 
-  print(final_z)
+  #print(final_z)
   return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g))
 }
 
