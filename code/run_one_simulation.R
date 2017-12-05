@@ -1,20 +1,23 @@
-run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "equal", random_nested = 0, interaction_pool = 10, my_bp = NULL, my_cp = NULL, my_gamma){  
+run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "equal", random_nested = 0, 
+                              interaction_pool = 10, my_bp = NULL, my_cp = NULL, my_gamma, my_ipp = NULL, 
+                              my_ipp_neg = NULL, my_BC = NULL, my_BC_neg = NULL, order_int_proj = c(5,4,3,2), 
+                              n_int_proj = c(2,6,8,10), my_beta = c(0,0,0,0), my_phi = c(0,0,0,0)){  
   ################################
   ######## enter user data
   ################################
   
   # for positively related projects
   my_nint = interaction_pool    # size of subset of related projects
-  my_order_int_proj = c(5,4,3,2) #c(6,5,4,3,2) # order of interdependencies between projects
-  my_n_int_proj = c(2,6,8,10) #c(1,3,5,6,10) # number of interdependencies of each order
+  my_order_int_proj = order_int_proj #c(6,5,4,3,2) # order of interdependencies between projects
+  my_n_int_proj = n_int_proj #c(1,3,5,6,10) # number of interdependencies of each order
   my_use_ipp_str = random_nested   # 1 if use structured interdependencies, 0 for random (see below)
   # benefit of implementing all projects in I_k = B_k
   # B_k = bonus_add + bonus_mult * mean benefit of projects in I_k
   # NOTE: in paper, I've removed reference to multiplier -- additive effects only
   my_alpha = my_alpha # additive effect for benefits
   my_gamma = my_gamma # multiplicative effect for benefits
-  my_beta = c(0,0,0,0,0,0) # additive effect for costs
-  my_phi = c(0,0,0,0,0,0) # multiplicative effect for costs
+  my_beta = my_beta # additive effect for costs
+  my_phi = my_phi # multiplicative effect for costs
   my_selprobs = my_selprob # one of "equal", "prop", "invprop"
   # for negatively related projects
   my_nint_neg = 8    # size of subset of related projects
@@ -46,43 +49,52 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   
   n = length(my_bp) # number of projects
   
-  # generate set of projects involved in positive interdependencies
-  selprobs = compute_selection_probs(selprobs = my_selprobs,bp=my_bp,cp=my_cp)
-  my_starting_proj = sample(1:n,my_nint,prob=selprobs)
-  #my_starting_proj
-  # generate set of projects involved in negative interdependencies
-  selprobs_neg = compute_selection_probs(selprobs = my_selprobs_neg,bp=my_bp,cp=my_cp)
-  my_starting_proj_neg = sample(1:n,my_nint_neg,prob=selprobs_neg)
-  #my_starting_proj_neg
   # generate positive project interdependencies
-  my_ipp = create_interdependencies(starting_proj=my_starting_proj,
-                                    n_int_proj=my_n_int_proj,
-                                    order_int_proj=my_order_int_proj,
-                                    use_ipp_str=my_use_ipp_str)
+  if(is.null(my_ipp)){
+    # generate set of projects involved in positive interdependencies
+    selprobs = compute_selection_probs(selprobs = my_selprobs,bp=my_bp,cp=my_cp)
+    my_starting_proj = sample(1:n,my_nint,prob=selprobs)
+    
+    my_ipp = create_interdependencies(starting_proj=my_starting_proj,
+                                      n_int_proj=my_n_int_proj,
+                                      order_int_proj=my_order_int_proj,
+                                      use_ipp_str=my_use_ipp_str)
+  }
   #my_ipp
   # generate negative project interdependencies
-  my_ipp_neg = create_interdependencies(starting_proj=my_starting_proj_neg,
-                                        n_int_proj=my_n_int_proj_neg,
-                                        order_int_proj=my_order_int_proj_neg,
-                                        use_ipp_str=my_use_ipp_str_neg)
+  if(is.null(my_ipp_neg)){
+    # generate set of projects involved in negative interdependencies
+    selprobs_neg = compute_selection_probs(selprobs = my_selprobs_neg,bp=my_bp,cp=my_cp)
+    my_starting_proj_neg = sample(1:n,my_nint_neg,prob=selprobs_neg)
+    
+    my_ipp_neg = create_interdependencies(starting_proj=my_starting_proj_neg,
+                                          n_int_proj=my_n_int_proj_neg,
+                                          order_int_proj=my_order_int_proj_neg,
+                                          use_ipp_str=my_use_ipp_str_neg)
+  }
   #my_ipp_neg
   # compute benefits and costs of positive interdependencies
-  my_BC = compute_interdependent_BC(ipp=my_ipp,
-                                    bp=my_bp,
-                                    cp=my_cp,
-                                    alpha=my_alpha,
-                                    gamma=my_gamma,
-                                    beta=my_beta,
-                                    phi=my_phi)
+  if(is.null(my_BC)){
+    my_BC = compute_interdependent_BC(ipp=my_ipp,
+                                      bp=my_bp,
+                                      cp=my_cp,
+                                      alpha=my_alpha,
+                                      gamma=my_gamma,
+                                      beta=my_beta,
+                                      phi=my_phi)
+  }
   #my_BC
   # compute benefits and costs of negative interdependencies
-  my_BC_neg = compute_interdependent_BC(ipp=my_ipp_neg,
-                                        bp=my_bp,
-                                        cp=my_cp,
-                                        alpha=my_alpha_neg,
-                                         gamma=my_gamma_neg,
-                                        beta=my_beta_neg,
-                                        phi=my_phi_neg)
+  if(is.null(my_BC_neg)){
+    my_BC_neg = compute_interdependent_BC(ipp=my_ipp_neg,
+                                          bp=my_bp,
+                                          cp=my_cp,
+                                          alpha=my_alpha_neg,
+                                           gamma=my_gamma_neg,
+                                          beta=my_beta_neg,
+                                          phi=my_phi_neg)
+  }
+  
   #my_BC_neg
   ################################
   ######## models
@@ -96,7 +108,7 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
                               cp = my_cp,
                               Ci = c(my_BC$Ci,my_BC_neg$Ci),
                               budget = my_budget)
-  
+  my_optsol = evaluate_z(my_optsol$solution[1:n], ipp=c(my_ipp,my_ipp_neg), bp = my_bp,  cp = my_cp, Bi = c(my_BC$Bi,my_BC_neg$Bi), Ci = c(my_BC$Ci,my_BC_neg$Ci), budget = my_budget, decompose = T)
   #eval = evaluate_z(my_optsol$solution[1:n], ipp=c(my_ipp,my_ipp_neg), bp = my_bp,  cp = my_cp, Bi = c(my_BC$Bi,my_BC_neg$Bi), Ci = c(my_BC$Ci,my_BC_neg$Ci), budget = my_budget)
   #print(eval)
   #print(my_budget)
@@ -112,6 +124,9 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
                               Ci = c(my_BC$Ci,my_BC_neg$Ci),
                               budget = my_budget,
                               max = FALSE)
+  
+  my_nadsol = evaluate_z(my_nadsol$solution[1:n], ipp=c(my_ipp,my_ipp_neg), bp = my_bp,  cp = my_cp, Bi = c(my_BC$Bi,my_BC_neg$Bi), Ci = c(my_BC$Ci,my_BC_neg$Ci), budget = my_budget, decompose = T)
+  
   #my_nadsol
   # compute mean performance of random feasible portfolio
   my_randsols = construct_random_portfolios(nRP = 1,
@@ -142,7 +157,7 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
                          Ci = c(my_BC$Ci,my_BC_neg$Ci),
                          budget = my_budget)
   
-  if(greedy_netvalue$benefit > my_optsol$objval){browser()}
+  if(greedy_netvalue$benefit > my_optsol$benefit){browser()}
   
 
 
@@ -238,8 +253,8 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   
 
   # output results
-  v_zopt = my_optsol$objval  # value of optimal portfolio
-  v_znad = my_nadsol$objval  # value of nadir portfolio
+  v_zopt = my_optsol$benefit  # value of optimal portfolio
+  v_znad = my_nadsol$benefit  # value of nadir portfolio
   v_zrand = mean(my_randsols$benefit)   # mean value of random portfolio
   v_zttb = my_ttb$benefit   # value of take-the-best portfolio
   v_greedy_netvalue = greedy_netvalue$benefit# value of greedy net value portfolio
@@ -250,6 +265,18 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   v_lvpmax = mean(lvp_max$benefit)
   v_rvpmax = mean(rvp_max$benefit)
   
+  v_zopt_bare = my_optsol$benefit_bare  # bare value of optimal portfolio
+  v_znad_bare = my_nadsol$benefit_bare  # bare value of nadir portfolio
+  v_zrand_bare = mean(my_randsols$benefit_bare)   # mean bare value of random portfolio
+  v_zttb_bare = my_ttb$benefit_bare   # bare value of take-the-best portfolio
+  v_greedy_netvalue_bare = greedy_netvalue$benefit_bare# bare value of greedy net value portfolio
+  v_dom_bare = mean(my_dom$benefit_bare)
+  v_greedyvalue_bare = mean(greedy_value$benefit_bare)
+  v_greedycost_bare = mean(greedy_cost$benefit_bare)
+  v_mvpmax_bare = mean(mvp_max$benefit_bare)
+  v_lvpmax_bare = mean(lvp_max$benefit_bare)
+  v_rvpmax_bare = mean(rvp_max$benefit_bare)
+
   v_zopt
   v_znad
   v_zrand
@@ -268,10 +295,17 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   PL_lvpmax = (v_lvpmax-v_znad) / (v_zopt - v_znad)
   PL_rvpmax = (v_rvpmax-v_znad) / (v_zopt - v_znad)
   
-    # collect inputs and outputs
-  inputs = c(n,my_nCV,my_budget,my_alpha[1],my_gamma[1],my_selprob,random_nested, interaction_pool)
-  outputs = c(v_zopt,v_znad,v_zrand,v_zttb,v_dom,v_greedy_netvalue,v_greedyvalue,v_greedycost,v_mvpmax, v_lvpmax, v_rvpmax, PL_zopt,PL_znad,PL_zrand,PL_zttb,PL_zdom,PL_greedy_netvalue,PL_greedyvalue,PL_greedycost,PL_mvpmax, PL_lvpmax, PL_rvpmax)
-  return(c(inputs,outputs))
+  # collect inputs and outputs
+  inputs = c(n = n, ncv = my_nCV, budget = my_budget, alpha = my_alpha[1], gamma = my_gamma[1], selprob = my_selprob, random_nested, interaction_pool)
+  outputs = c(v_zopt, v_znad, v_zrand, v_zttb, v_dom, v_greedy_netvalue, v_greedyvalue, v_greedycost, v_mvpmax, v_lvpmax, v_rvpmax, 
+              PL_zopt, PL_znad, PL_zrand, PL_zttb,PL_zdom, PL_greedy_netvalue, PL_greedyvalue, PL_greedycost, PL_mvpmax, PL_lvpmax, PL_rvpmax,
+              v_zopt_bare, v_znad_bare, v_zrand_bare, v_zttb_bare, v_dom_bare, v_greedy_netvalue_bare, v_greedyvalue_bare, v_greedycost_bare, v_mvpmax_bare, v_lvpmax_bare, v_rvpmax_bare)
+  ret = c(inputs, outputs)
+  names(ret) = c("nproj","nCV","budget","my_alpha","my_gamma","my_selprob","random_nested","interaction_pool",
+                 "opt","min","rand","ttb","dom","greedynet","greedyvalue","greedycost", "mvpmax","lvpmax","rvpmax",
+                 "opt_nor","min_nor","rand_nor","ttb_nor","dom_nor","greedynet_nor","greedyvalue_nor", "greedycost_nor", "mvpmax_nor", "lvpmax_nor", "rvpmax_nor",
+                 "opt_bare","min_bare","rand_bare","ttb_bare","dom_bare","greedynet_bare","greedyvalue_bare", "greedycost_bare", "mvpmax_bare", "lvpmax_bare", "rvpmax_bare")
+  return(ret)
 }
 
 benefit <- function(x){

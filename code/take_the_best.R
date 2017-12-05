@@ -29,8 +29,9 @@ take_the_best = function(nCV,ipp,bp,Bi,cp,Ci,budget){
 
   # order alternatives by cost/benefit ratio
   cb_ratio = cp/bp
-  alts = sort.int(cb_ratio,index.return = T)$ix
-  
+  random_order = sample(1:length(bp))
+  #alts = sort.int(-cb_ratio, random_order,index.return = T)$ix
+  alts = order(cb_ratio, random_order)
   
   while((cv < nCV)&(i < n)){
   
@@ -61,7 +62,7 @@ take_the_best = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   final_z = my_z
   
   final_res = evaluate_z(z = my_z, ipp = ipp, bp  = bp, Bi = Bi, 
-                          cp = cp, Ci = Ci, budget = budget) 
+                          cp = cp, Ci = Ci, budget = budget, decompose = T) 
   
   benefit = final_res$benefit 
   cost = final_res$cost 
@@ -69,7 +70,7 @@ take_the_best = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
   
 }
 
@@ -79,7 +80,9 @@ greedy_value = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   
   # order alternatives by benefit ratio
   cb_ratio = bp
-  alts = sort.int(-cb_ratio,index.return = T)$ix
+  random_order = sample(1:length(bp))
+  #alts = sort.int(-cb_ratio, random_order,index.return = T)$ix
+  alts = order(-cb_ratio, random_order)
   
   # generate TTB portfolio
   i = 1
@@ -117,7 +120,7 @@ greedy_value = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   final_z = my_z
   
   final_res = evaluate_z(z = my_z, ipp = ipp, bp  = bp, Bi = Bi, 
-                         cp = cp, Ci = Ci, budget = budget) 
+                         cp = cp, Ci = Ci, budget = budget, decompose = T) 
   
   benefit = final_res$benefit 
   cost = final_res$cost 
@@ -125,7 +128,7 @@ greedy_value = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
   
 }
 
@@ -135,7 +138,9 @@ greedy_cost = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   
   # order alternatives by cost
   cb_ratio = cp
-  alts = sort.int(cb_ratio,index.return = T)$ix
+  random_order = sample(1:length(bp))
+  #alts = sort.int(cb_ratio ,index.return = T)$ix
+  alts = order(cb_ratio, random_order)
   
   # generate TTB portfolio
   i = 1
@@ -173,7 +178,7 @@ greedy_cost = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   final_z = my_z
   
   final_res = evaluate_z(z = my_z, ipp = ipp, bp  = bp, Bi = Bi, 
-                         cp = cp, Ci = Ci, budget = budget) 
+                         cp = cp, Ci = Ci, budget = budget, decompose = T) 
   
   benefit = final_res$benefit 
   cost = final_res$cost 
@@ -181,7 +186,7 @@ greedy_cost = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
   
 }
 
@@ -213,8 +218,10 @@ greedy_netvalue = function(nCV,ipp,bp,Bi,cp,Ci,budget){
         net_value = getNetValue(bp, Bi, my_z, ipp)
         # order alternatives by cost/net_benefit ratio
         cb_ratio = cp/net_value
-        cb_ratio[my_z == 1] = 100000000 #alternatives already in portfolio come last!
-        alts = sort.int(cb_ratio,index.return = T)$ix
+        cb_ratio[my_z == 1] = 10000 #alternatives already in portfolio come last!
+        #alts = sort.int(cb_ratio,index.return = T)$ix
+        random_order = sample(1:length(bp))
+        alts = order(cb_ratio, random_order)
         i = 1
     }
     
@@ -246,7 +253,7 @@ greedy_netvalue = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   final_z = my_z
   
   final_res = evaluate_z(z = my_z, ipp = ipp, bp  = bp, Bi = Bi, 
-                         cp = cp, Ci = Ci, budget = budget) 
+                         cp = cp, Ci = Ci, budget = budget, decompose = T) 
   
   benefit = final_res$benefit 
   cost = final_res$cost 
@@ -254,7 +261,7 @@ greedy_netvalue = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
 }
 
 #Find the most valuable project in the portfolio and then add the project that has the biggest positive interaction with it.
@@ -270,7 +277,9 @@ mvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
     }
     cb_ratio = (cp/net_values) * my_z
     cb_ratio[my_z == 0] = 100000000 #alternatives not in portfolio come last!
-    alts = sort.int(cb_ratio,index.return = T)$ix
+    #alts = sort.int(cb_ratio,index.return = T)$ix
+    random_order = sample(1:length(bp))
+    alts = order(cb_ratio, random_order)
     return (alts[1]) #MVP is the first project in the list!
   }
   
@@ -318,8 +327,10 @@ mvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
       net_value = getNetValueSingleProject(bp, Bi, my_z, ipp, mvp)
       # order alternatives by cost/net_benefit ratio
       cb_ratio = cp/net_value
-      cb_ratio[my_z == 1] = 100000000 #alternatives already in portfolio come last!
-      alts = sort.int(cb_ratio,index.return = T)$ix
+      cb_ratio[my_z == 1] = 10000 #alternatives already in portfolio come last!
+      #alts = sort.int(cb_ratio,index.return = T)$ix
+      random_order = sample(1:length(bp))
+      alts = order(cb_ratio, random_order)
       i = 1
     }
     
@@ -352,7 +363,7 @@ mvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   final_z = my_z
   
   final_res = evaluate_z(z = my_z, ipp = ipp, bp  = bp, Bi = Bi, 
-                         cp = cp, Ci = Ci, budget = budget) 
+                         cp = cp, Ci = Ci, budget = budget, decompose = T) 
   
   benefit = final_res$benefit 
   cost = final_res$cost 
@@ -360,7 +371,7 @@ mvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
   
 }
 
@@ -376,8 +387,10 @@ lvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
       net_values = c(net_values, bp[i] + sum(subBi[interactionIncludes(i, ipp)]))
     }
     cb_ratio = (cp/net_values) * my_z
-    cb_ratio[my_z == 0] = -1000000 #alternatives not in portfolio come first!
-    alts = sort.int(cb_ratio,index.return = T)$ix
+    cb_ratio[my_z == 0] = -1000000 #alternatives not in portfolio come last!
+    #alts = sort.int(cb_ratio,index.return = T)$ix
+    random_order = sample(1:length(bp))
+    alts = order(-cb_ratio, random_order)
     return (alts[length(alts)]) #LVP is the first project in the list!
   }
   
@@ -424,7 +437,9 @@ lvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
       # order alternatives by cost/net_benefit ratio
       cb_ratio = cp/net_value
       cb_ratio[my_z == 1] = 100000000 #alternatives already in portfolio come last!
-      alts = sort.int(cb_ratio,index.return = T)$ix
+      #alts = sort.int(cb_ratio,index.return = T)$ix
+      random_order = sample(1:length(bp))
+      alts = order(cb_ratio, random_order)
       i = 1
     }
     
@@ -438,7 +453,7 @@ lvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
     my_z[new_alt] = 1
     # evaluate proposed portfolio
     my_propsol = evaluate_z(z = my_z, ipp = ipp, bp  = bp, Bi = Bi, 
-                            cp = cp, Ci = Ci, budget = budget)  
+                            cp = cp, Ci = Ci, budget = budget, decompose = T)  
     
     # if feasible, accept; if not feasible, reject
     if(my_propsol$feasible == 1){
@@ -465,7 +480,7 @@ lvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
   
 }
 
@@ -518,7 +533,9 @@ rvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
       # order alternatives by cost/net_benefit ratio
       cb_ratio = cp/net_value
       cb_ratio[my_z == 1] = 100000000 #alternatives already in portfolio come last!
-      alts = sort.int(cb_ratio,index.return = T)$ix
+      #alts = sort.int(cb_ratio,index.return = T)$ix
+      random_order = sample(1:length(bp))
+      alts = order(cb_ratio, random_order)
       i = 1
     }
     
@@ -551,7 +568,7 @@ rvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   final_z = my_z
   
   final_res = evaluate_z(z = my_z, ipp = ipp, bp  = bp, Bi = Bi, 
-                         cp = cp, Ci = Ci, budget = budget) 
+                         cp = cp, Ci = Ci, budget = budget, decompose = T) 
   
   benefit = final_res$benefit 
   cost = final_res$cost 
@@ -559,7 +576,7 @@ rvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
   
 }
 

@@ -1,6 +1,6 @@
 library("ggplot2")
 library("reshape")
-library("plyr")
+#library("plyr")
 library("dplyr")
 library("tidyr")
 library("gridExtra")
@@ -13,6 +13,9 @@ se <- function(x)
 #############################################
 #### With vs Without Interactions ####
 uniform <- subset(dat, data == "uniform")
+
+subset(uniform , normalized == "Normalized" & my_alpha == "Low Interactions" & my_gamma == "No Multiplicative Interactions") %>% group_by(variable) %>% summarize(meanv = mean(value), se = se(value))
+
 grouped = uniform %>% group_by(my_alpha, normalized, variable, budget) %>% summarize(meanv = mean(value), se = se(value))
 p = ggplot(grouped, aes(x = budget, y = meanv, colour = variable)) + geom_line() + geom_point() + facet_wrap(normalized~my_alpha, scales="free")
 p = p + geom_errorbar(grouped, mapping = aes(x = budget, ymin = meanv - se, ymax = meanv + se, colour = variable), size = 0.4, width=0.01)

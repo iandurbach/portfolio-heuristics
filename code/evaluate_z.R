@@ -10,7 +10,7 @@
 ####################
 ####################
 
-evaluate_z = function(z,ipp,bp,Bi,cp,Ci,budget)
+evaluate_z = function(z,ipp,bp,Bi,cp,Ci,budget, decompose = F)
 {
   n_int_proj = c()
   
@@ -32,6 +32,11 @@ evaluate_z = function(z,ipp,bp,Bi,cp,Ci,budget)
   benefit = sum(c(z,g) * c(bp,Bi))
   cost = sum(c(z,g) * c(cp,Ci))
   feasible = ifelse(cost<=budget,1,0)
-  
-  return(list(benefit=benefit,cost=cost,feasible=feasible,g=g))
+  benefit_bare = 0
+  benefit_interactions = 0
+  if(decompose){
+    benefit_bare = sum(z * bp)
+    benefit_interactions = sum(g * Bi)
+  }
+  return(list(benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = benefit_bare, benefit_interactions = benefit_interactions))
 }

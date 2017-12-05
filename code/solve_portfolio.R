@@ -20,7 +20,7 @@ solve_portfolio = function(ipp,order_int_proj,bp,Bi,cp,Ci,budget,max=TRUE){
   
   K = sum(n_int_proj) # number of interactions
   n = length(bp) # number of projects
-    
+  
   # a: indicator variables assigning projects to interactions
   k = 1
   a = matrix(0,nrow=K,ncol=n)
