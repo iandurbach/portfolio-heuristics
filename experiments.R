@@ -25,16 +25,19 @@ runExperiments <- function(numdatasets){
     nCV <- c(3)
     budgets <- sum(x$cost) * round(c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),2)
     relative_budgets = round(c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),2)
-    my_alphas <- c(0,3,6)
+    my_alphas <- c(0, 3, 6)
     my_gammas <- c(0, 0.5, 1)
     selprob <- c("equal","prop","invprop")
     interaction_pool <- c(10)
     random_nested = c(0, 1)
     all_res <- rbind(all_res, runSimulation(nproj, nCV, budgets, relative_budgets, my_alphas = my_alphas, random_nested = random_nested, my_selprob = selprob, interaction_pool = interaction_pool, my_bp = my_bp, my_cp = my_cp, my_gamma = my_gammas))
   }
-  colnames(all_res) = c("nproj","nCV","budget","my_alpha","my_gamma","my_selprob","random_nested","interaction_pool","opt","min","rand","ttb","dom","greedynet","greedyvalue","greedycost", "mvpmax","lvpmax","rvpmax",
-                        "opt_nor","min_nor","rand_nor","ttb_nor","dom_nor","greedynet_nor","greedyvalue_nor", "greedycost_nor", "mvpmax_nor", "lvpmax_nor", "rvpmax_nor")
-  write.csv(all_res, paste("results/all_", suffix, ".csv", sep = ""))
+  colnames(all_res) = c("nproj","nCV","budget","my_alpha","my_gamma","my_selprob","random_nested","interaction_pool",
+                        "opt","min","rand","ttb","dom","greedynet","greedyvalue","greedycost", "mvpmax","lvpmax","rvpmax",
+                        "opt_nor","min_nor","rand_nor","ttb_nor","dom_nor","greedynet_nor","greedyvalue_nor", "greedycost_nor", "mvpmax_nor", "lvpmax_nor", "rvpmax_nor",
+                        "opt_bare","min_bare","rand_bare","ttb_bare","dom_bare","greedynet_bare","greedyvalue_bare", "greedycost_bare", "mvpmax_bare", "lvpmax_bare", "rvpmax_bare")
+  #write.csv(all_res, paste("results/all_", suffix, ".csv", sep = ""))
+  all_res
 }
 
 ### BASE CONTEXT 1
@@ -137,8 +140,10 @@ runAllExperiments <- function(numdatasets){
     random_nested = c(0)
     all_res <- rbind(all_res, runSimulation(nproj, nCV, budgets, relative_budgets, my_alphas = my_alphas, random_nested = random_nested, my_selprob = selprob, interaction_pool = interaction_pool, my_bp = my_bp, my_cp = my_cp, my_gamma = my_gammas))
   }
-  colnames(all_res) = c("nproj","nCV","budget","my_alpha","my_gamma","my_selprob","random_nested","interaction_pool","opt","min","rand","ttb","dom","greedynet","greedyvalue","greedycost", "mvpmax","lvpmax","rvpmax",
-                        "opt_nor","min_nor","rand_nor","ttb_nor","dom_nor","greedynet_nor","greedyvalue_nor", "greedycost_nor", "mvpmax_nor", "lvpmax_nor", "rvpmax_nor")
+  colnames(all_res) = c("nproj","nCV","budget","my_alpha","my_gamma","my_selprob","random_nested","interaction_pool",
+                        "opt","min","rand","ttb","dom","greedynet","greedyvalue","greedycost", "mvpmax","lvpmax","rvpmax",
+                        "opt_nor","min_nor","rand_nor","ttb_nor","dom_nor","greedynet_nor","greedyvalue_nor", "greedycost_nor", "mvpmax_nor", "lvpmax_nor", "rvpmax_nor",
+                        "opt_bare","min_bare","rand_bare","ttb_bare","dom_bare","greedynet_bare","greedyvalue_bare", "greedycost_bare", "mvpmax_bare", "lvpmax_bare", "rvpmax_bare")
   write.csv(all_res, paste("results/base_context_3c_", suffix, ".csv", sep = ""))
 }
 
@@ -149,9 +154,9 @@ runSimulation <- function(nproj, nCV, budgets, relative_budgets, my_alphas = c(0
   pars = expand.grid(nproj= nproj, nCV = nCV, budget = budgets, selprob = my_selprob, alpha = my_alphas, random_nested = random_nested, interaction_pool = interaction_pool, gamma = my_gamma)
   
   nruns = nrow(pars) # number of parameter combinations
-  nreps = 1 # number of repetitions at each parameter combination
+  nreps = 5 # number of repetitions at each parameter combination
   
-  all_res = matrix(0, nrow=nreps*nruns, ncol=30)
+  all_res = matrix(0, nrow=nreps*nruns, ncol=41)
   cnt = 1
   #Rprof(line.profiling=TRUE)
   for(irun in 1:nruns){
@@ -185,7 +190,7 @@ runSimulation <- function(nproj, nCV, budgets, relative_budgets, my_alphas = c(0
 #
 filepath = "data/pos_skew_data_"
 suffix = "psk"
-runExperiments(100)
+all_res = runExperiments(5)
 filepath = "data/neg_skew_data_"
 suffix = "neg"
 runExperiments(100)

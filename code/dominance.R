@@ -98,7 +98,7 @@ construct_dombased_portfolios <- function(nRP = 100, nCV, ipp, nor_bp, bp, Bi, n
     k = k+1
   }
  
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = my_propsol$benefit_bare))
 }
 
 construct_cumdombased_portfolios <- function(nRP = 100, nCV, ipp, nor_bp, bp, Bi, nor_cp,cp, Ci, budget, cueOrder){
@@ -210,13 +210,13 @@ domBased = function(nCV,ipp,nor_bp,bp,Bi,nor_cp,cp,Ci,budget, domFunction = domi
   }
   final_z = my_z
   final_res = evaluate_z(z = my_z, ipp = ipp, bp  = bp, Bi = Bi, 
-                         cp = cp, Ci = Ci, budget = budget) 
+                         cp = cp, Ci = Ci, budget = budget, decompose = T) 
   benefit = final_res$benefit 
   cost = final_res$cost 
   feasible = final_res$feasible
   g = final_res$g 
   #print(final_z)
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
 }
 
 positiveInteractions <- function(proj, ipp, Bi){

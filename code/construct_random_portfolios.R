@@ -63,7 +63,7 @@ construct_random_portfolios = function(nRP,nCV,ipp,bp,Bi,cp,Ci,budget){
     final_z[k,] = my_z
     # evaluate last portfolio
     my_propsol = evaluate_z(z = my_z, ipp = ipp, bp  = bp, Bi = Bi, 
-                            cp = cp, Ci = Ci, budget = budget)  
+                            cp = cp, Ci = Ci, budget = budget, decompose = T)  
     benefit[k] = my_propsol$benefit 
     cost[k] = my_propsol$cost 
     feasible[k] = my_propsol$feasible
@@ -71,7 +71,7 @@ construct_random_portfolios = function(nRP,nCV,ipp,bp,Bi,cp,Ci,budget){
     
   }
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = my_propsol$benefit_bare))
   
 }
   

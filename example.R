@@ -52,6 +52,8 @@ atb_full = getPortfolio("atb_full", context)
 atb_mvp = getPortfolio("atb_mvp", context)
 atb_lvp = getPortfolio("atb_lvp", context)
 for (i in 1:100) print(getPortfolio("atb_rvp", context))
+for (i in 1:100) print(getPortfolio("atv", context)$benefit)
+
 atv = getPortfolio("atv", context)
 atv
 atc = getPortfolio("atc", context)
