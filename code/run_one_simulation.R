@@ -265,17 +265,17 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   v_lvpmax = mean(lvp_max$benefit)
   v_rvpmax = mean(rvp_max$benefit)
   
-  v_zopt_bare = my_optsol$benefit_bare  # bare value of optimal portfolio
-  v_znad_bare = my_nadsol$benefit_bare  # bare value of nadir portfolio
-  v_zrand_bare = mean(my_randsols$benefit_bare)   # mean bare value of random portfolio
-  v_zttb_bare = my_ttb$benefit_bare   # bare value of take-the-best portfolio
-  v_greedy_netvalue_bare = greedy_netvalue$benefit_bare# bare value of greedy net value portfolio
-  v_dom_bare = mean(my_dom$benefit_bare)
-  v_greedyvalue_bare = mean(greedy_value$benefit_bare)
-  v_greedycost_bare = mean(greedy_cost$benefit_bare)
-  v_mvpmax_bare = mean(mvp_max$benefit_bare)
-  v_lvpmax_bare = mean(lvp_max$benefit_bare)
-  v_rvpmax_bare = mean(rvp_max$benefit_bare)
+  v_zopt_bare = (my_optsol$benefit_bare-v_znad) / (v_zopt - v_znad) # bare value of optimal portfolio
+  v_znad_bare = (my_nadsol$benefit_bare-v_znad) / (v_zopt - v_znad)  # bare value of nadir portfolio
+  v_zrand_bare = (mean(my_randsols$benefit_bare)-v_znad) / (v_zopt - v_znad)   # mean bare value of random portfolio
+  v_zttb_bare = (my_ttb$benefit_bare -v_znad) / (v_zopt - v_znad)  # bare value of take-the-best portfolio
+  v_greedy_netvalue_bare = (greedy_netvalue$benefit_bare -v_znad) / (v_zopt - v_znad)# bare value of greedy net value portfolio
+  v_dom_bare = (mean(my_dom$benefit_bare) -v_znad) / (v_zopt - v_znad)
+  v_greedyvalue_bare = (mean(greedy_value$benefit_bare) -v_znad) / (v_zopt - v_znad)
+  v_greedycost_bare = (mean(greedy_cost$benefit_bare) -v_znad) / (v_zopt - v_znad)
+  v_mvpmax_bare = (mean(mvp_max$benefit_bare) -v_znad) / (v_zopt - v_znad)
+  v_lvpmax_bare = (mean(lvp_max$benefit_bare) -v_znad) / (v_zopt - v_znad)
+  v_rvpmax_bare = (mean(rvp_max$benefit_bare) -v_znad) / (v_zopt - v_znad)
 
   v_zopt
   v_znad
