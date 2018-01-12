@@ -59,6 +59,10 @@ detach(package:plyr)
 load("results/opt_value_decomposition.RData")
 
 grouped = Xall %>% group_by(my_alpha, my_gamma, budget, data) %>% summarize(meanv = mean(proportion_no_interactions), se = se(proportion_no_interactions))
-p = ggplot(grouped, aes(x = budget, y = meanv)) + geom_line() + geom_point()  + facet_wrap(my_gamma~my_alpha) +ylim(c(0,1))
+grouped$my_alpha = factor(grouped$my_alpha)
+levels(grouped$my_alpha)[1] = paste0("Alpha: ", levels(grouped$my_alpha)[1])
+grouped$my_gamma = factor(grouped$my_gamma)
+levels(grouped$my_gamma)[1] = paste0("Gamma: ", levels(grouped$my_gamma)[1])
+p = ggplot(grouped, aes(x = budget, y = meanv)) + geom_line() + geom_point()  + facet_grid(my_gamma~my_alpha) +ylim(c(0,1))
 p = p + geom_errorbar(grouped, mapping = aes(x = budget, ymin = meanv - se, ymax = meanv + se), size = 0.4, width=0.01)
-p
+p + ggtitle("Proportion of Value not contributed by Interactions")
