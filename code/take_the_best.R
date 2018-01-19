@@ -453,7 +453,7 @@ lvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
     my_z[new_alt] = 1
     # evaluate proposed portfolio
     my_propsol = evaluate_z(z = my_z, ipp = ipp, bp  = bp, Bi = Bi, 
-                            cp = cp, Ci = Ci, budget = budget, decompose = T)  
+                            cp = cp, Ci = Ci, budget = budget)  
     
     # if feasible, accept; if not feasible, reject
     if(my_propsol$feasible == 1){
@@ -472,7 +472,7 @@ lvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   final_z = my_z
   
   final_res = evaluate_z(z = my_z, ipp = ipp, bp  = bp, Bi = Bi, 
-                         cp = cp, Ci = Ci, budget = budget) 
+                         cp = cp, Ci = Ci, budget = budget, decompose = T) 
   
   benefit = final_res$benefit 
   cost = final_res$cost 

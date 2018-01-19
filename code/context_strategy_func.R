@@ -1,3 +1,78 @@
+createInteractions = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "equal", random_nested = 0, 
+                              interaction_pool = 10, my_bp = NULL, my_cp = NULL, my_gamma, my_ipp = NULL, 
+                              my_ipp_neg = NULL, my_BC = NULL, my_BC_neg = NULL, order_int_proj = c(5,4,3,2), 
+                              n_int_proj = c(2,6,8,10), my_beta = c(0,0,0,0), my_phi = c(0,0,0,0)){
+
+  my_nint = interaction_pool    # size of subset of related projects
+  my_order_int_proj = order_int_proj #c(6,5,4,3,2) # order of interdependencies between projects
+  my_n_int_proj = n_int_proj #c(1,3,5,6,10) # number of interdependencies of each order
+  my_use_ipp_str = random_nested   # 1 if use structured interdependencies, 0 for random (see below)
+  # benefit of implementing all projects in I_k = B_k
+  # B_k = bonus_add + bonus_mult * mean benefit of projects in I_k
+  # NOTE: in paper, I've removed reference to multiplier -- additive effects only
+  my_alpha = my_alpha # additive effect for benefits
+  my_gamma = my_gamma # multiplicative effect for benefits
+  my_beta = my_beta # additive effect for costs
+  my_phi = my_phi # multiplicative effect for costs
+  my_selprobs = my_selprob # one of "equal", "prop", "invprop"
+  # for negatively related projects
+  my_nint_neg = 8    # size of subset of related projects
+  my_order_int_proj_neg = c(3,2) # order of interdependencies between projects
+  my_n_int_proj_neg = c(4,2) # number of interdependencies of each order
+  my_use_ipp_str_neg = 0   # 1 if use structured interdependencies, 0 for random (see below)
+  # penalty of implementing all projects in I_k = B_k
+  # B_k = bonus_add + bonus_mult * mean benefit of projects in I_k
+  my_alpha_neg = c(0,0) # additive effect for benefits
+  my_gamma_neg = c(0,0) # multiplicative effect for benefits
+  my_beta_neg = c(0,0) # additive effect for costs
+  my_phi_neg = c(0,0) # multiplicative effect for costs
+  my_selprobs_neg = "equal" # one of "equal", "prop", "invprop"
+  
+  n = length(my_bp) # number of projects
+  
+    # generate set of projects involved in positive interdependencies
+    selprobs = compute_selection_probs(selprobs = my_selprob, bp=my_bp,cp=my_cp)
+    my_starting_proj = sample(1:n,my_nint,prob=selprobs)
+    
+    my_ipp = create_interdependencies(starting_proj=my_starting_proj,
+                                      n_int_proj=my_n_int_proj,
+                                      order_int_proj=my_order_int_proj,
+                                      use_ipp_str=my_use_ipp_str)
+  
+  #my_ipp
+  # generate negative project interdependencies
+    # generate set of projects involved in negative interdependencies
+    selprobs_neg = compute_selection_probs(selprobs = my_selprobs_neg,bp=my_bp,cp=my_cp)
+    my_starting_proj_neg = sample(1:n,my_nint_neg,prob=selprobs_neg)
+    
+    my_ipp_neg = create_interdependencies(starting_proj=my_starting_proj_neg,
+                                          n_int_proj=my_n_int_proj_neg,
+                                          order_int_proj=my_order_int_proj_neg,
+                                          use_ipp_str=my_use_ipp_str_neg)
+  
+  #my_ipp_neg
+  # compute benefits and costs of positive interdependencies
+    my_BC = compute_interdependent_BC(ipp=my_ipp,
+                                      bp=my_bp,
+                                      cp=my_cp,
+                                      alpha=my_alpha,
+                                      gamma=my_gamma,
+                                      beta=my_beta,
+                                      phi=my_phi)
+  
+  #my_BC
+  # compute benefits and costs of negative interdependencies
+    my_BC_neg = compute_interdependent_BC(ipp=my_ipp_neg,
+                                          bp=my_bp,
+                                          cp=my_cp,
+                                          alpha=my_alpha_neg,
+                                          gamma=my_gamma_neg,
+                                          beta=my_beta_neg,
+                                          phi=my_phi_neg)
+  
+  return (list(my_ipp = my_ipp, my_ipp_neg = my_ipp_neg, my_BC = my_BC, my_BC_neg))
+}
+
 getContext = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "equal", random_nested = 0, 
                       interaction_pool = 10, my_bp = NULL, my_cp = NULL, my_gamma, my_ipp = NULL, 
                       my_ipp_neg = NULL, my_BC = NULL, my_BC_neg = NULL, order_int_proj = c(5,4,3,2), 
