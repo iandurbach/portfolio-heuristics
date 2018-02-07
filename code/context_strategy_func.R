@@ -188,7 +188,7 @@ getContext = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "equal", 
 # atv
 # atc
 
-getPortfolio = function(strategy, context, nCV = 3){
+getPortfolio = function(strategy, context, nCV = 3, calculateDomPrevalence = F){
   switch(strategy, 
          opt={
            sol = solve_portfolio(ipp=context$ipp,
@@ -296,7 +296,8 @@ getPortfolio = function(strategy, context, nCV = 3){
                              Ci = context$Ci,
                              budget = context$budget,
                              nor_bp = nor_bp,
-                             nor_cp = nor_cp)  
+                             nor_cp = nor_cp,
+                             calculateDomPrevalence = calculateDomPrevalence)  
           
          }
   )

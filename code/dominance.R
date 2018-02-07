@@ -80,25 +80,27 @@ paretoCumulative <- function(x){
 }
 
 
-construct_dombased_portfolios <- function(nRP = 100, nCV, ipp, nor_bp, bp, Bi, nor_cp,cp, Ci, budget){
+construct_dombased_portfolios <- function(nRP = 100, nCV, ipp, nor_bp, bp, Bi, nor_cp,cp, Ci, budget, calculateDomPrevalence = F){
   n = length(bp)
   final_z = matrix(0,nrow=nRP,ncol=n)
   benefit = c() 
   cost = c() 
   feasible = c()
+  pareto_counts = list()
   g = matrix(0,nrow=nRP,ncol=length(Bi))
   k = 1
   while(k <= nRP){
-    my_propsol = domBased(nCV, ipp, nor_bp,bp, Bi, nor_cp,cp, Ci, budget)
+    my_propsol = domBased(nCV, ipp, nor_bp,bp, Bi, nor_cp,cp, Ci, budget, calculateDominancePrevalence = calculateDomPrevalence)
     final_z[k,] = my_propsol$final_z
     benefit[k] = my_propsol$benefit 
     cost[k] = my_propsol$cost 
     feasible[k] = my_propsol$feasible
-    g[k,] = my_propsol$g 
+    g[k,] = my_propsol$g
+    pareto_counts[[k]] <- my_propsol$pareto_simple_count
     k = k+1
   }
  
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = my_propsol$benefit_bare))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = my_propsol$benefit_bare, pareto_counts = pareto_counts))
 }
 
 construct_cumdombased_portfolios <- function(nRP = 100, nCV, ipp, nor_bp, bp, Bi, nor_cp,cp, Ci, budget, cueOrder){
@@ -147,7 +149,7 @@ cueValidity <- function(cost, value, budget){
 # 3. Is involved in Positive Interaction (+)
 # 4. Return (Value/Cost) (+)
 # Is in budget (+)
-domBased = function(nCV,ipp,nor_bp,bp,Bi,nor_cp,cp,Ci,budget, domFunction = dominates, cue_order = c(1,2,3)){
+domBased = function(nCV,ipp,nor_bp,bp,Bi,nor_cp,cp,Ci,budget, domFunction = dominates, cue_order = c(1,2,3), calculateDominancePrevalence = F){
   cue_order = cue_order + 1
   t_budget = budget
   remaining_budget = budget
@@ -161,10 +163,11 @@ domBased = function(nCV,ipp,nor_bp,bp,Bi,nor_cp,cp,Ci,budget, domFunction = domi
   proj_nor$return = proj$bp/(-proj$V3)
   proj_nor$in_budget = proj$in_budget
   proj_nor$dominated <- rep(0, n)
-  
+  paretoSimpleCt <- c()
   proj_nondom <- proj_nor
   my_z <- rep(0,n)
   cv = 0 #consecutive constraint violations
+  if(calculateDominancePrevalence) paretoSimpleCt <- c(paretoSimpleCt, (sum(paretoSimple(proj_nor[, c(2,3)]))))
   
   proj_nondom <- subset(proj_nondom, proj_nondom$in_budget == 1)
   while(cv < nCV){
@@ -172,6 +175,7 @@ domBased = function(nCV,ipp,nor_bp,bp,Bi,nor_cp,cp,Ci,budget, domFunction = domi
     proj$in_budget <- ifelse(remaining_budget - proj$V3 > 0,1,0)
     proj_nor$in_budget = proj$in_budget
     proj_nondom <- proj_nor
+    
     while(validProposal != 1){
       #check that proposed is not dominated:
       proj_nondom <- subset(proj_nor, dominated == 0)
@@ -203,6 +207,13 @@ domBased = function(nCV,ipp,nor_bp,bp,Bi,nor_cp,cp,Ci,budget, domFunction = domi
       my_z[proposed_id] = 0
       proj_nor$dominated <- (my_z)
     }else{
+      if(calculateDominancePrevalence){
+        if(sum(my_z) > 0){
+          paretoSimpleCt <- c(paretoSimpleCt, (sum(paretoSimple(proj_nor[-which(my_z == 1), c(2,3)]))))
+        }else{
+          paretoSimpleCt <- c(paretoSimpleCt, (sum(paretoSimple(proj_nor[, c(2,3)]))))
+        }
+      }
       cv = 0
       proj_nor$dominated <- (my_z)
       remaining_budget = remaining_budget + proj[proposed_id,3]
@@ -216,7 +227,7 @@ domBased = function(nCV,ipp,nor_bp,bp,Bi,nor_cp,cp,Ci,budget, domFunction = domi
   feasible = final_res$feasible
   g = final_res$g 
   #print(final_z)
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare, pareto_simple_count = paretoSimpleCt))
 }
 
 positiveInteractions <- function(proj, ipp, Bi){

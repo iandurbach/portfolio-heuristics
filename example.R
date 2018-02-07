@@ -59,7 +59,7 @@ atv
 atc = getPortfolio("atc", context)
 atc
 for (i in 1:100) {
-  dom = getPortfolio("dom", context)
+  dom = getPortfolio("dom", context, calculateDomPrevalence = TRUE)
   print(dom$final_z)
   print(dom$benefit)
 }
