@@ -1,6 +1,6 @@
 #library(Rsymphony)
 #library(lpSolve)
-library(Rglpk)
+#library(Rglpk)
 rm(list = ls())
 source("code/generate_project_data.R")
 source("code/compute_selection_probs.R")
