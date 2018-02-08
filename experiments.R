@@ -226,11 +226,13 @@ d = dominance_analysis(15)
 filepath = "data/neg_skew_data_"
 suffix = "neg"
 #runExperiments(100)
-all_res = value_decomposition(100)
+#all_res = value_decomposition(100)
+d = dominance_analysis(15)
 
 filepath = "data/uniform_data_"
 suffix = "uni"
 #runExperiments(100)
-all_res = value_decomposition(100)
+#all_res = value_decomposition(100)
+d = dominance_analysis(15)
 
-source("results/makedata.R")
+#source("results/makedata.R")
