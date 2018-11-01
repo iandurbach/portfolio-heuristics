@@ -62,4 +62,4 @@ match$match = as.numeric(as.character(match$match))
 match = match %>% group_by(heur) %>% mutate(cumsumnum = rev(cumsum(rev(num)))) 
 p1 = ggplot(data = match, aes(colour = heur, fill = heur, shape = heur, x = match, y = cumsumnum)) + geom_point() + geom_line() + theme_minimal() + ylab("# responses") + xlab("min match") + theme(legend.position = "bottom", legend.title = element_blank(), legend.key.size = unit(2, 'lines'))+ 
   guides(colour = guide_legend(nrow = 2))  
-ggsave("results/fig/minmatch.pdf",p1, width = 4, height = 5)
+ggsave("results/fig/minmatch.png",p1, width = 4, height = 5, dpi = 300)
