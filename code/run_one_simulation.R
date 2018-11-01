@@ -230,6 +230,23 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
                                Ci = c(my_BC$Ci,my_BC_neg$Ci),
                                budget = my_budget)
  
+ lex_3cuesbinary = construct_lex_portfolio_3cues(nCV = my_nCV,
+                                           ipp=c(my_ipp,my_ipp_neg),
+                                           bp  = my_bp,
+                                           Bi = c(my_BC$Bi,my_BC_neg$Bi),
+                                           cp = my_cp,
+                                           Ci = c(my_BC$Ci,my_BC_neg$Ci),
+                                           budget = my_budget,
+                                           binary_num_interactions = T)
+ 
+ lex_3cues = construct_lex_portfolio_3cues(nCV = my_nCV,
+                                           ipp=c(my_ipp,my_ipp_neg),
+                                           bp  = my_bp,
+                                           Bi = c(my_BC$Bi,my_BC_neg$Bi),
+                                           cp = my_cp,
+                                           Ci = c(my_BC$Ci,my_BC_neg$Ci),
+                                           budget = my_budget, binary_num_interactions = F)
+ 
  #my_dom_benefit = unlist(lapply(my_dom_eval, FUN= benefit))
  #order(cueValidity(cp, bp, budget))
   
@@ -275,6 +292,8 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   v_lvpmax = mean(lvp_max$benefit)
   v_rvpmax = mean(rvp_max$benefit)
   v_lex = lex$benefit
+  v_lex3cb = lex_3cuesbinary$benefit
+  v_lex3c = lex_3cues$benefit
   
   v_zopt_bare = (my_optsol$benefit_bare-v_znad) / (v_zopt - v_znad) # bare value of optimal portfolio
   v_znad_bare = (my_nadsol$benefit_bare-v_znad) / (v_zopt - v_znad)  # bare value of nadir portfolio
@@ -288,7 +307,9 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   v_lvpmax_bare = (mean(lvp_max$benefit_bare) -v_znad) / (v_zopt - v_znad)
   v_rvpmax_bare = (mean(rvp_max$benefit_bare) -v_znad) / (v_zopt - v_znad)
   v_lex_bare = (lex$benefit_bare -v_znad) / (v_zopt - v_znad)
-    
+  v_lex3c_bare = (lex_3cues$benefit_bare -v_znad) / (v_zopt - v_znad)
+  v_lex3cb_bare = (lex_3cuesbinary$benefit_bare -v_znad) / (v_zopt - v_znad)
+  
   v_zopt
   v_znad
   v_zrand
@@ -307,17 +328,19 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   PL_lvpmax = (v_lvpmax-v_znad) / (v_zopt - v_znad)
   PL_rvpmax = (v_rvpmax-v_znad) / (v_zopt - v_znad)
   PL_lex = (v_lex - v_znad) / (v_zopt - v_znad)
+  PL_lex3c = (v_lex3c - v_znad) / (v_zopt - v_znad)
+  PL_lex3cb = (v_lex3cb - v_znad) / (v_zopt - v_znad)
   
   # collect inputs and outputs
   inputs = c(n = n, ncv = my_nCV, budget = my_budget, alpha = my_alpha[1], gamma = my_gamma[1], selprob = my_selprob, random_nested, interaction_pool)
-  outputs = c(v_zopt, v_znad, v_zrand, v_zttb, v_dom, v_greedy_netvalue, v_greedyvalue, v_greedycost, v_mvpmax, v_lvpmax, v_rvpmax, v_lex,
-              PL_zopt, PL_znad, PL_zrand, PL_zttb,PL_zdom, PL_greedy_netvalue, PL_greedyvalue, PL_greedycost, PL_mvpmax, PL_lvpmax, PL_rvpmax, PL_lex,
-              v_zopt_bare, v_znad_bare, v_zrand_bare, v_zttb_bare, v_dom_bare, v_greedy_netvalue_bare, v_greedyvalue_bare, v_greedycost_bare, v_mvpmax_bare, v_lvpmax_bare, v_rvpmax_bare, v_lex_bare)
+  outputs = c(v_zopt, v_znad, v_zrand, v_zttb, v_dom, v_greedy_netvalue, v_greedyvalue, v_greedycost, v_mvpmax, v_lvpmax, v_rvpmax, v_lex, v_lex3cb, v_lex3c,
+              PL_zopt, PL_znad, PL_zrand, PL_zttb,PL_zdom, PL_greedy_netvalue, PL_greedyvalue, PL_greedycost, PL_mvpmax, PL_lvpmax, PL_rvpmax, PL_lex, PL_lex3cb, PL_lex3c,
+              v_zopt_bare, v_znad_bare, v_zrand_bare, v_zttb_bare, v_dom_bare, v_greedy_netvalue_bare, v_greedyvalue_bare, v_greedycost_bare, v_mvpmax_bare, v_lvpmax_bare, v_rvpmax_bare, v_lex_bare, v_lex3cb_bare, v_lex3c_bare)
   ret = c(inputs, outputs)
   names(ret) = c("nproj","nCV","budget","my_alpha","my_gamma","my_selprob","random_nested","interaction_pool",
-                 "opt","min","rand","ttb","dom","greedynet","greedyvalue","greedycost", "mvpmax","lvpmax","rvpmax", "lex",
-                 "opt_nor","min_nor","rand_nor","ttb_nor","dom_nor","greedynet_nor","greedyvalue_nor", "greedycost_nor", "mvpmax_nor", "lvpmax_nor", "rvpmax_nor", "PL_lex",
-                 "opt_bare","min_bare","rand_bare","ttb_bare","dom_bare","greedynet_bare","greedyvalue_bare", "greedycost_bare", "mvpmax_bare", "lvpmax_bare", "rvpmax_bare", "v_lex_bare")
+                 "opt","min","rand","ttb","dom","greedynet","greedyvalue","greedycost", "mvpmax","lvpmax","rvpmax", "lex", "lex3cb", "lex3c",
+                 "opt_nor","min_nor","rand_nor","ttb_nor","dom_nor","greedynet_nor","greedyvalue_nor", "greedycost_nor", "mvpmax_nor", "lvpmax_nor", "rvpmax_nor", "PL_lex","PL_lex3cb", "PL_lex3c",
+                 "opt_bare","min_bare","rand_bare","ttb_bare","dom_bare","greedynet_bare","greedyvalue_bare", "greedycost_bare", "mvpmax_bare", "lvpmax_bare", "rvpmax_bare", "v_lex_bare", "v_lex3cb_bare", "v_lex3c_bare")
   return(ret)
 }
 

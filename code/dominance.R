@@ -79,68 +79,7 @@ paretoCumulative <- function(x){
   return(dominated)
 }
 
-########################
-# first cue is whether portfolio is in a positive interaction
-# second cue is cost-value ratio
-########################
-construct_lex_portfolio <- function(nCV, ipp, nor_bp, bp, Bi, nor_cp,cp, Ci, budget){
-  
-  n = length(bp)
-  
-  # generate LEX portfolio
-  i = 1
-  cv = 0 # index for consecutive constraint violations (terminate when = 3)
-  
-  # start with empty portfolio
-  my_z = rep(0,n)
-  proj <- as.data.frame(cbind(idx = seq(1,n),bp,-cp))
-  
-  posinteractions = ifelse(positiveInteractions(proj, ipp, Bi) > 0, -1, 0)
-  # order alternatives by cost/benefit ratio and whether there are positive interactions
-  cb_ratio = cp/bp 
-  random_order = sample(1:length(bp))
-  #alts = sort.int(-cb_ratio, random_order,index.return = T)$ix
-  alts = order(posinteractions, cb_ratio, random_order)
 
-  while((cv < nCV)&(i < n)){
-    
-    # proposed addition to portfolio
-    new_alt = alts[i]
-    
-    # proposed portfolio
-    my_z[new_alt] = 1
-    
-    # evaluate proposed portfolio
-    my_propsol = evaluate_z(z = my_z, ipp = ipp, bp  = bp, Bi = Bi, 
-                            cp = cp, Ci = Ci, budget = budget)  
-    
-    # if feasible, accept; if not feasible, reject
-    if(my_propsol$feasible == 1){
-      my_z[new_alt] = 1 # accept proposed alternative in portfolio
-      cv = 0   # reset constraint violation counter to 0
-    }else{
-      my_z[new_alt] = 0  # reject proposed alternative in portfolio
-      cv = cv + 1    # increment constrain violation counter
-    }
-    
-    # move on to next alternative
-    i = i + 1
-    
-  }
-  
-  final_z = my_z
-  
-  final_res = evaluate_z(z = my_z, ipp = ipp, bp  = bp, Bi = Bi, 
-                         cp = cp, Ci = Ci, budget = budget, decompose = T) 
-  
-  benefit = final_res$benefit 
-  cost = final_res$cost 
-  feasible = final_res$feasible
-  g = final_res$g 
-  
-  
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
-}
 
 construct_dombased_portfolios <- function(nRP = 100, nCV, ipp, nor_bp, bp, Bi, nor_cp,cp, Ci, budget, calculateDomPrevalence = F){
   n = length(bp)
@@ -292,6 +231,7 @@ domBased = function(nCV,ipp,nor_bp,bp,Bi,nor_cp,cp,Ci,budget, domFunction = domi
   return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare, pareto_simple_count = paretoSimpleCt))
 }
 
+#returns the number of interactions in which proj participates
 positiveInteractions <- function(proj, ipp, Bi){
   numInteractions = rep(0,length(proj$idx))
   for (i in c(1:length(ipp))){

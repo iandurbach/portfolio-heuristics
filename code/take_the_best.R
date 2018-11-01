@@ -616,6 +616,30 @@ interactionIncludes = function(projectindex, ipp){
   return(indices)
 }
 
+#returns the number of interactions each project has with projects in the portfolio
+#if the project is in the portfolio it returns 0.
+numInteractionsWithExistingPortfolio = function(ipp, my_z, binary = F){
+  r = rep(0, length(my_z))
+  interactions_with_projects_in_portfolio = c()
+  for(i in 1:length(my_z)){
+    if(my_z[i] == 1){
+      interactions_with_projects_in_portfolio = c(interactions_with_projects_in_portfolio, interactionIncludes(i, ipp)) 
+    }
+  }
+  interactions_with_projects_in_portfolio = unique(interactions_with_projects_in_portfolio)
+  #we use only the interactions with projects in the portfolio
+  reducedInteractions = reduceInteractionsTo(ipp, c(), interactions_with_projects_in_portfolio)$newipp
+  for(i in 1:length(my_z)){
+    if(my_z[i] == 0){
+      if(length(reducedInteractions) > 0){
+        r[i] = length(interactionIncludes(i, reducedInteractions))
+      }
+    }
+  }
+  if(binary){r = ifelse(r > 0, 1, 0)}
+  r
+}
+
 #returns an array with the indices of the interactions that have been completed in the portfolio.
 completedInteractions = function(ipp, my_z){
   projects_included = which(my_z==1)

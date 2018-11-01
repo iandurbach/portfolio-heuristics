@@ -187,6 +187,7 @@ getContext = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "equal", 
 # atb_rvp
 # atv
 # atc
+# lex
 
 getPortfolio = function(strategy, context, nCV = 3, calculateDomPrevalence = F){
   switch(strategy, 
@@ -281,6 +282,15 @@ getPortfolio = function(strategy, context, nCV = 3, calculateDomPrevalence = F){
                               cp = context$cp,
                               Ci = context$Ci,
                               budget = context$budget)  
+         },
+         lex={
+           sol = construct_lex_portfolio(nCV = nCV,           
+                                         ipp=context$ipp,
+                                         bp  = context$bp,
+                                         Bi = context$Bi,
+                                         cp = context$cp,
+                                         Ci = context$Ci,
+                                         budget = context$budget)  
          },
          dom={
            #We normalize values, cost and budget.
