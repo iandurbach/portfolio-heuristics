@@ -9,10 +9,12 @@ options(dplyr.print_max = 1e4)
 
 
 # normalize data so that Opt = 100, Random = 0
+# if random is equals to optimal we devalue it by 1.
 dat <- dat %>% 
   filter(normalized == "Absolute") %>%
   group_by(X, data) %>% 
-  mutate(normvalue = (value - value[variable == "Random"])/(value[variable == "Optimal"] - value[variable == "Random"]))
+  mutate(devaluedrandom = as.numeric(ifelse(value[variable == "Optimal"] == value[variable == "Random"], value[variable == "Random"] - 1, value[variable == "Random"]))) %>%
+  mutate(normvalue = (value - devaluedrandom)/(value[variable == "Optimal"] - devaluedrandom))
 
 # remember to ungroup 
 dat <- dat %>% ungroup()
@@ -37,7 +39,7 @@ dat <- filter(dat, my_alpha == "No Interactions" |
 
 dat$variable <- factor(dat$variable,
                        levels=c("greedynet","mvp","lvp","rvp","Greedy","greedyvalue",
-                                "greedycost","Heuristic","Random","Optimal","Nadir", "lex"))
+                                "greedycost","Heuristic","Random","Optimal","Nadir", "lex", "lex3c", "lex3cb"))
 
 dat <- mutate(dat, heuristic = fct_recode(variable,
                                           "AtB" = "greedynet", 
@@ -51,6 +53,8 @@ dat <- mutate(dat, heuristic = fct_recode(variable,
                                           "Random" = "Random",
                                           "Opt" = "Optimal",
                                           "Nadir" = "Nadir",
-                                          "Lex" = "lex"))
+                                          "Lex" = "lex",
+                                          "Lex3cb" = "lex3cb",
+                                          "Lex3c" = "lex3c"))
 
 save(dat, file = "results/processed_dat.RData")

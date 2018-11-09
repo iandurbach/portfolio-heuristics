@@ -2,6 +2,7 @@
 #library(lpSolve)
 #library(Rglpk)
 rm(list = ls())
+library(Rglpk)
 source("code/generate_project_data.R")
 source("code/compute_selection_probs.R")
 source("code/create_interdependencies.R")
@@ -13,7 +14,7 @@ source("code/take_the_best.R")
 source("code/dominance.R")
 source("code/run_one_simulation.R")
 source("code/context_strategy_func.R")
-
+source("code/lex.R")
 
 runExperiments <- function(numdatasets){
   ### INTERACTIONS 1
@@ -35,9 +36,9 @@ runExperiments <- function(numdatasets){
     all_res <- rbind(all_res, runSimulation(nproj, nCV, budgets, relative_budgets, my_alphas = my_alphas, random_nested = random_nested, my_selprob = selprob, interaction_pool = interaction_pool, my_bp = my_bp, my_cp = my_cp, my_gamma = my_gammas))
   }
   colnames(all_res) = c("nproj","nCV","budget","my_alpha","my_gamma","my_selprob","random_nested","interaction_pool",
-                        "opt","min","rand","ttb","dom","greedynet","greedyvalue","greedycost", "mvpmax","lvpmax","rvpmax",
-                        "opt_nor","min_nor","rand_nor","ttb_nor","dom_nor","greedynet_nor","greedyvalue_nor", "greedycost_nor", "mvpmax_nor", "lvpmax_nor", "rvpmax_nor",
-                        "opt_bare","min_bare","rand_bare","ttb_bare","dom_bare","greedynet_bare","greedyvalue_bare", "greedycost_bare", "mvpmax_bare", "lvpmax_bare", "rvpmax_bare")
+                        "opt","min","rand","ttb","dom","greedynet","greedyvalue","greedycost", "mvpmax","lvpmax","rvpmax", "lex", "lex3cb", "lex3c",
+                        "opt_nor","min_nor","rand_nor","ttb_nor","dom_nor","greedynet_nor","greedyvalue_nor", "greedycost_nor", "mvpmax_nor", "lvpmax_nor", "rvpmax_nor", "lex_nor", "lex3cb_nor", "lex3c_nor",
+                        "opt_bare","min_bare","rand_bare","ttb_bare","dom_bare","greedynet_bare","greedyvalue_bare", "greedycost_bare", "mvpmax_bare", "lvpmax_bare", "rvpmax_bare", "lex_bare","lex3cb_bare", "lex3c_bare")
   write.csv(all_res, paste("results/all_", suffix, ".csv", sep = ""))
   all_res
 }
@@ -101,7 +102,7 @@ runSimulation <- function(nproj, nCV, budgets, relative_budgets, my_alphas = c(0
   nruns = nrow(pars) # number of parameter combinations
   nreps = 5 # number of repetitions at each parameter combination
   
-  all_res = matrix(0, nrow=nreps*nruns, ncol=41)
+  all_res = matrix(0, nrow=nreps*nruns, ncol=50)
   cnt = 1
   #Rprof(line.profiling=TRUE)
   for(irun in 1:nruns){
@@ -202,9 +203,13 @@ runDominancePrevalenceAnalysis <- function(nproj, nCV, budgets, relative_budgets
               random_nested = pars$random_nested[irun], 
               interaction_pool = pars$interaction_pool[irun])
       datarow = c(res,dom$pareto_counts[[1]])
-      print(58-length(datarow))
-      print(datarow)
-      datarow = c(datarow, rep(NA, 58-length(datarow)))
+      #print(58-length(datarow))
+      #print(datarow)
+      if(length(datarow) <= 58){
+        datarow = c(datarow, rep(NA, 58-length(datarow)))
+      }else{
+        datarow = datarow[1:58]
+      }
       all_res[cnt,] = datarow
       cnt = cnt + 1
     }
@@ -213,26 +218,4 @@ runDominancePrevalenceAnalysis <- function(nproj, nCV, budgets, relative_budgets
   return(all_res)
 }
 
-#
-# SKEWED DATA
-#
-#nCV = number of constraint violations when choosing a random or a greedy portfolio.
-#
-filepath = "data/pos_skew_data_"
-suffix = "psk"
-#all_res = runExperiments(100)
-#all_res = value_decomposition(100)
-d = dominance_analysis(15)
-filepath = "data/neg_skew_data_"
-suffix = "neg"
-#runExperiments(100)
-#all_res = value_decomposition(100)
-d = dominance_analysis(15)
 
-filepath = "data/uniform_data_"
-suffix = "uni"
-#runExperiments(100)
-#all_res = value_decomposition(100)
-d = dominance_analysis(15)
-
-#source("results/makedata.R")

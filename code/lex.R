@@ -8,10 +8,12 @@ construct_lex_portfolio <- function(nCV, ipp, bp, Bi, cp, Ci, budget){
   
   # generate LEX portfolio
   i = 1
+  add_order = 1
   cv = 0 # index for consecutive constraint violations (terminate when = 3)
   
   # start with empty portfolio
   my_z = rep(0,n)
+  order_my_z = rep(0,n)
   proj <- as.data.frame(cbind(idx = seq(1,n),bp,-cp))
   
   posinteractions = ifelse(positiveInteractions(proj, ipp, Bi) > 0, -1, 0)
@@ -37,6 +39,8 @@ construct_lex_portfolio <- function(nCV, ipp, bp, Bi, cp, Ci, budget){
     # if feasible, accept; if not feasible, reject
     if(my_propsol$feasible == 1){
       my_z[new_alt] = 1 # accept proposed alternative in portfolio
+      order_my_z[new_alt] = add_order
+      add_order = add_order + 1
       cv = 0   # reset constraint violation counter to 0
     }else{
       my_z[new_alt] = 0  # reject proposed alternative in portfolio
@@ -57,7 +61,7 @@ construct_lex_portfolio <- function(nCV, ipp, bp, Bi, cp, Ci, budget){
   feasible = final_res$feasible
   g = final_res$g 
 
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare, order_z = order_my_z))
 }
 
 ########################
@@ -75,6 +79,7 @@ construct_lex_portfolio_3cues <- function(nCV, ipp, nor_bp, bp, Bi, nor_cp,cp, C
   
   # start with empty portfolio
   my_z = rep(0,n)
+  order_my_z = rep(0,n)
   proj <- as.data.frame(cbind(idx = seq(1,n),bp,-cp))
   
   posinteractions = ifelse(positiveInteractions(proj, ipp, Bi) > 0, -1, 0)
@@ -103,6 +108,7 @@ construct_lex_portfolio_3cues <- function(nCV, ipp, nor_bp, bp, Bi, nor_cp,cp, C
       # if feasible, accept; if not feasible, reject
       if(my_propsol$feasible == 1){
         my_z[new_alt] = 1 #accept proposed alternative in portfolio
+        order_my_z[new_alt] = i
         cv = 0   #reset constraint violation counter to 0
         posinteractions_with_portfolio = numInteractionsWithExistingPortfolio(ipp, my_z, binary = binary_num_interactions)
         alts = order(posinteractions, posinteractions_with_portfolio, cb_ratio, random_order)
@@ -126,7 +132,7 @@ construct_lex_portfolio_3cues <- function(nCV, ipp, nor_bp, bp, Bi, nor_cp,cp, C
   feasible = final_res$feasible
   g = final_res$g 
 
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare, order_z = order_my_z))
 }
 
 rounding_cb_cp_effect = function(){

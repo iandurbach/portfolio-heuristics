@@ -13,8 +13,12 @@ se <- function(x)
 #############################################
 #### With vs Without Interactions ####
 uniform <- subset(dat, data == "uniform")
+psk <- subset(dat, data == "positive")
+nsk <- subset(dat, data == "negative")
 
-subset(uniform , normalized == "Normalized" & my_alpha == "Low Interactions" & my_gamma == "No Multiplicative Interactions") %>% group_by(variable) %>% dplyr::summarize(meanv = mean(value), se = se(value))
+subset(uniform , normalized == "Normalized" & my_alpha == "No Interactions" & my_gamma == "High Multiplicative Interactions") %>% group_by(variable) %>% dplyr::summarize(meanv = mean(value), se = se(value))
+subset(psk , normalized == "Normalized" & my_alpha == "No Interactions" & my_gamma == "High Multiplicative Interactions") %>% group_by(variable) %>% dplyr::summarize(meanv = mean(value), se = se(value))
+subset(nsk , normalized == "Normalized" & my_alpha == "No Interactions" & my_gamma == "High Multiplicative Interactions") %>% group_by(variable) %>% dplyr::summarize(meanv = mean(value), se = se(value))
 
 grouped = uniform %>% group_by(my_alpha, my_gamma, normalized, variable, budget) %>% dplyr::summarize(meanv = mean(value), se = se(value))
 p = ggplot(grouped, aes(x = budget, y = meanv, colour = variable)) + geom_line() + geom_point() + facet_wrap(normalized~my_alpha, scales="free")
