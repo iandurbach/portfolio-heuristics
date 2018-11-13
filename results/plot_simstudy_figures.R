@@ -122,6 +122,7 @@ nadir = grouped %>%
 
 # reduce the set of heuristics to plot (exclude Opt, Random, Nadir)
 grouped <- filter(grouped, heuristic %in% heurs2)
+grouped$heuristic = factor(grouped$heuristic, levels = heurs2)
 
 # set the main aesthetic variables
 p = ggplot(grouped, aes(x = budget, 
@@ -150,7 +151,7 @@ p = p + theme_bw(base_size=24) +
   theme(axis.text=element_text(size=20), axis.title=element_text(size=20)) +
   theme(legend.position = "bottom", legend.text=element_text(size=20),
         legend.title=element_blank(), legend.key.size = unit(2, 'lines')) + 
-  guides(colour = guide_legend(nrow = 3)) 
+  guides(colour = guide_legend(nrow = 2)) 
 
 p2 <- p
 
