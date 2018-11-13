@@ -90,9 +90,9 @@ p = p +
 p = p + theme_bw(base_size=24) + 
   xlab("Budget (prop. of sum of all project costs)") + ylab("Performance") + 
   theme(axis.text=element_text(size=20), axis.title=element_text(size=20)) +
-  theme(legend.position = "bottom", legend.text=element_text(size=20),
+  theme(legend.position = "bottom", legend.text=element_text(size=18),
         legend.title=element_blank(), legend.key.size = unit(2, 'lines')) + 
-  guides(colour = guide_legend(nrow = 2)) 
+  guides(colour = guide_legend(nrow = 3)) 
 
 p1 <- p
 
@@ -122,6 +122,8 @@ nadir = grouped %>%
 
 # reduce the set of heuristics to plot (exclude Opt, Random, Nadir)
 grouped <- filter(grouped, heuristic %in% heurs2)
+
+#change order of heuristics
 grouped$heuristic = factor(grouped$heuristic, levels = heurs2)
 
 # set the main aesthetic variables
@@ -149,9 +151,9 @@ p = p +
 p = p + theme_bw(base_size=24) + 
   xlab("Budget (prop. of sum of all project costs)") + ylab("Performance") + 
   theme(axis.text=element_text(size=20), axis.title=element_text(size=20)) +
-  theme(legend.position = "bottom", legend.text=element_text(size=20),
+  theme(legend.position = "bottom", legend.text=element_text(size=18),
         legend.title=element_blank(), legend.key.size = unit(2, 'lines')) + 
-  guides(colour = guide_legend(nrow = 2)) 
+  guides(colour = guide_legend(nrow = 3)) 
 
 p2 <- p
 
