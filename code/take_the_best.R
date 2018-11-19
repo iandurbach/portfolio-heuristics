@@ -533,7 +533,7 @@ rvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   
   n = length(bp)
   i = 1
-  add_order
+  add_order = 1
   cv = 0 # index for consecutive constraint violations (terminate when = 3)
   # start with empty portfolio
   my_z = rep(0,n)

@@ -157,7 +157,7 @@ getContext = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "equal", 
   }
   #my_BC
   # compute benefits and costs of negative interdependencies
-  if(is.null(my_BC_neg)){
+  if(is.null(my_BC_neg) & length(my_ipp_neg) > 0){
     my_BC_neg = compute_interdependent_BC(ipp=my_ipp_neg,
                                           bp=my_bp,
                                           cp=my_cp,
