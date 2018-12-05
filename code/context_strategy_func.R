@@ -157,7 +157,7 @@ getContext = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "equal", 
   }
   #my_BC
   # compute benefits and costs of negative interdependencies
-  if(is.null(my_BC_neg)){
+  if(is.null(my_BC_neg) & length(my_ipp_neg) > 0){
     my_BC_neg = compute_interdependent_BC(ipp=my_ipp_neg,
                                           bp=my_bp,
                                           cp=my_cp,
@@ -187,8 +187,9 @@ getContext = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "equal", 
 # atb_rvp
 # atv
 # atc
+# lex
 
-getPortfolio = function(strategy, context, nCV = 3){
+getPortfolio = function(strategy, context, nCV = 3, calculateDomPrevalence = F){
   switch(strategy, 
          opt={
            sol = solve_portfolio(ipp=context$ipp,
@@ -282,6 +283,15 @@ getPortfolio = function(strategy, context, nCV = 3){
                               Ci = context$Ci,
                               budget = context$budget)  
          },
+         lex={
+           sol = construct_lex_portfolio(nCV = nCV,           
+                                         ipp=context$ipp,
+                                         bp  = context$bp,
+                                         Bi = context$Bi,
+                                         cp = context$cp,
+                                         Ci = context$Ci,
+                                         budget = context$budget)  
+         },
          dom={
            #We normalize values, cost and budget.
            nor_bp = (context$bp - min(context$bp))/(max(context$bp)-min(context$bp))
@@ -296,7 +306,8 @@ getPortfolio = function(strategy, context, nCV = 3){
                              Ci = context$Ci,
                              budget = context$budget,
                              nor_bp = nor_bp,
-                             nor_cp = nor_cp)  
+                             nor_cp = nor_cp,
+                             calculateDomPrevalence = calculateDomPrevalence)  
           
          }
   )

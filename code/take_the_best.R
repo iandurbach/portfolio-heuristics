@@ -26,7 +26,9 @@ take_the_best = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   
   # start with empty portfolio
   my_z = rep(0,n)
-
+  order_my_z = rep(0,n)
+  
+  
   # order alternatives by cost/benefit ratio
   cb_ratio = cp/bp
   random_order = sample(1:length(bp))
@@ -48,6 +50,7 @@ take_the_best = function(nCV,ipp,bp,Bi,cp,Ci,budget){
     # if feasible, accept; if not feasible, reject
     if(my_propsol$feasible == 1){
       my_z[new_alt] = 1 # accept proposed alternative in portfolio
+      order_my_z[new_alt] = i
       cv = 0   # reset constraint violation counter to 0
     }else{
       my_z[new_alt] = 0  # reject proposed alternative in portfolio
@@ -70,7 +73,7 @@ take_the_best = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare, order_z = order_my_z))
   
 }
 
@@ -86,11 +89,12 @@ greedy_value = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   
   # generate TTB portfolio
   i = 1
+  add_order = 1
   cv = 0 # index for consecutive constraint violations (terminate when = 3)
   
   # start with empty portfolio
   my_z = rep(0,n)
-  
+  order_my_z = rep(0,n)
   while((cv < nCV)&(i < n)){
     
     # proposed addition to portfolio
@@ -106,6 +110,8 @@ greedy_value = function(nCV,ipp,bp,Bi,cp,Ci,budget){
     # if feasible, accept; if not feasible, reject
     if(my_propsol$feasible == 1){
       my_z[new_alt] = 1 # accept proposed alternative in portfolio
+      order_my_z[new_alt] = add_order
+      add_order = add_order + 1
       cv = 0   # reset constraint violation counter to 0
     }else{
       my_z[new_alt] = 0  # reject proposed alternative in portfolio
@@ -128,7 +134,7 @@ greedy_value = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare, order_z = order_my_z))
   
 }
 
@@ -148,7 +154,7 @@ greedy_cost = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   
   # start with empty portfolio
   my_z = rep(0,n)
-  
+  order_my_z = rep(0,n)
   while((cv < nCV)&(i < n)){
     
     # proposed addition to portfolio
@@ -164,6 +170,7 @@ greedy_cost = function(nCV,ipp,bp,Bi,cp,Ci,budget){
     # if feasible, accept; if not feasible, reject
     if(my_propsol$feasible == 1){
       my_z[new_alt] = 1 # accept proposed alternative in portfolio
+      order_my_z[new_alt] = i
       cv = 0   # reset constraint violation counter to 0
     }else{
       my_z[new_alt] = 0  # reject proposed alternative in portfolio
@@ -186,7 +193,7 @@ greedy_cost = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare, order_z = order_my_z))
   
 }
 
@@ -207,10 +214,11 @@ greedy_netvalue = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   
   n = length(bp)
   i = 1
+  add_order = 1
   cv = 0 # index for consecutive constraint violations (terminate when = 3)
   # start with empty portfolio
   my_z = rep(0,n)
-  
+  order_my_z = rep(0,n)
   nothingChanged = 0
   while((cv < nCV)&(i < n)){
 
@@ -239,6 +247,8 @@ greedy_netvalue = function(nCV,ipp,bp,Bi,cp,Ci,budget){
     # if feasible, accept; if not feasible, reject
     if(my_propsol$feasible == 1){
       my_z[new_alt] = 1 # accept proposed alternative in portfolio
+      order_my_z[new_alt] = add_order
+      add_order = add_order + 1
       cv = 0   # reset constraint violation counter to 0
       nothingChanged = 0
     }else{
@@ -261,7 +271,7 @@ greedy_netvalue = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare, order_z = order_my_z))
 }
 
 #Find the most valuable project in the portfolio and then add the project that has the biggest positive interaction with it.
@@ -315,10 +325,11 @@ mvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   
   n = length(bp)
   i = 1
+  add_order = 1
   cv = 0 # index for consecutive constraint violations (terminate when = 3)
   # start with empty portfolio
   my_z = rep(0,n)
-  
+  order_my_z = rep(0,n)
   nothingChanged = 0
   while((cv < nCV)&(i < n)){
     
@@ -349,6 +360,8 @@ mvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
     # if feasible, accept; if not feasible, reject
     if(my_propsol$feasible == 1){
       my_z[new_alt] = 1 # accept proposed alternative in portfolio
+      order_my_z[new_alt] = add_order
+      add_order = add_order + 1
       cv = 0   # reset constraint violation counter to 0
       nothingChanged = 0
     }else{
@@ -371,7 +384,7 @@ mvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare, order_z = order_my_z))
   
 }
 
@@ -424,10 +437,11 @@ lvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   
   n = length(bp)
   i = 1
+  add_order = 1
   cv = 0 # index for consecutive constraint violations (terminate when = 3)
   # start with empty portfolio
   my_z = rep(0,n)
-  
+  order_my_z = rep(0,n)
   nothingChanged = 0
   while((cv < nCV)&(i < n)){
     
@@ -458,6 +472,8 @@ lvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
     # if feasible, accept; if not feasible, reject
     if(my_propsol$feasible == 1){
       my_z[new_alt] = 1 # accept proposed alternative in portfolio
+      order_my_z[new_alt] = add_order
+      add_order = add_order + 1
       cv = 0   # reset constraint violation counter to 0
       nothingChanged = 0
     }else{
@@ -480,7 +496,7 @@ lvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare, order_z = order_my_z))
   
 }
 
@@ -517,10 +533,11 @@ rvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   
   n = length(bp)
   i = 1
+  add_order = 1
   cv = 0 # index for consecutive constraint violations (terminate when = 3)
   # start with empty portfolio
   my_z = rep(0,n)
-  
+  order_my_z = rep(0,n)
   nothingChanged = 0
   while((cv < nCV)&(i < n)){
     if(nothingChanged == 0){
@@ -554,6 +571,8 @@ rvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
     # if feasible, accept; if not feasible, reject
     if(my_propsol$feasible == 1){
       my_z[new_alt] = 1 # accept proposed alternative in portfolio
+      order_my_z[new_alt] = add_order
+      add_order = add_order + 1
       cv = 0   # reset constraint violation counter to 0
       nothingChanged = 0
     }else{
@@ -576,7 +595,7 @@ rvp_max = function(nCV,ipp,bp,Bi,cp,Ci,budget){
   g = final_res$g 
   
   
-  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare))
+  return(list(final_z=final_z,benefit=benefit,cost=cost,feasible=feasible,g=g, benefit_bare = final_res$benefit_bare, order_z = order_my_z))
   
 }
 
@@ -614,6 +633,30 @@ interactionIncludes = function(projectindex, ipp){
     }
   }
   return(indices)
+}
+
+#returns the number of interactions each project has with projects in the portfolio
+#if the project is in the portfolio it returns 0.
+numInteractionsWithExistingPortfolio = function(ipp, my_z, binary = F){
+  r = rep(0, length(my_z))
+  interactions_with_projects_in_portfolio = c()
+  for(i in 1:length(my_z)){
+    if(my_z[i] == 1){
+      interactions_with_projects_in_portfolio = c(interactions_with_projects_in_portfolio, interactionIncludes(i, ipp)) 
+    }
+  }
+  interactions_with_projects_in_portfolio = unique(interactions_with_projects_in_portfolio)
+  #we use only the interactions with projects in the portfolio
+  reducedInteractions = reduceInteractionsTo(ipp, c(), interactions_with_projects_in_portfolio)$newipp
+  for(i in 1:length(my_z)){
+    if(my_z[i] == 0){
+      if(length(reducedInteractions) > 0){
+        r[i] = length(interactionIncludes(i, reducedInteractions))
+      }
+    }
+  }
+  if(binary){r = ifelse(r > 0, 1, 0)}
+  r
 }
 
 #returns an array with the indices of the interactions that have been completed in the portfolio.

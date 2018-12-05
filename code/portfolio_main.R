@@ -1,5 +1,6 @@
 #library(Rsymphony)
-library(lpSolve)
+#library(lpSolve)
+library(Rglpk)
 
 #setwd("/Users/iandurbach/Documents/Research/150306_PortfolioHeuristics/")
 
