@@ -23,7 +23,7 @@ All functions used to run the portfolio selection problem are contained in *simu
 
 ### Behavioural experiment
 
-The two tasks are contained in *behavioural_lab/tasks/task[12]*. To view the tasks as they would have been viewed by study participants, open the **ui.R** file in those folders and run the app. The task instructions are in **Instructions1.Rmd**. Note the "submit" button will not work in the app as this linked to a server that is no longer in use.
+The two tasks are contained in *behavioural_lab/tasks/task[12]*. To view the tasks as they would have been viewed by study participants, open the **ui.R** file in those folders and run the app. The task instructions are in **Instructions1.Rmd**. Note the "submit" button will not work in the app as this linked to a server that is no longer in use. A instructional video used to walk participants through the task is available at https://youtu.be/5kzl6QcoOCo.
 
 To reproduce our results from the paper,
 
