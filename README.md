@@ -1,4 +1,4 @@
-# portfolioheuristics
+# portfolio-heuristics
 
 This repo contains code and data accompanying the paper "Psychological heuristics for portfolio decisions" by myself, Simon Algorta, Dieudonne Kantu, Konstantinos Katsikopoulos and Ozgur Simsek. The paper is currently under review and a citation will be added once available.
 
