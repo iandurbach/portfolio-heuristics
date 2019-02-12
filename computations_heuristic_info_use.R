@@ -1,4 +1,4 @@
-## compute and plot the number of operations needed by the various heuristics we use.
+## computes and plots the number of operations needed by the various heuristics we use.
 
 library(tidyverse)
 
