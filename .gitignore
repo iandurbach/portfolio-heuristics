@@ -1,2 +1,12 @@
-**/*.RData
 **/.DS_Store
+**/.Rhistory
+.Rproj.user
+extra/*
+behavioural_lab/output/*
+behavioural_lab/results/*
+simulation/results/*
+simulation/data/*
+!behavioural_lab/output/readme.txt
+!behavioural_lab/results/readme.txt
+!simulation/results/readme.txt
+!simulation/data/readme.txt
