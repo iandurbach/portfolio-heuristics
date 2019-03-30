@@ -234,11 +234,13 @@ domBased = function(nCV,ipp,nor_bp,bp,Bi,nor_cp,cp,Ci,budget, domFunction = domi
 #returns the number of interactions in which proj participates
 positiveInteractions <- function(proj, ipp, Bi){
   numInteractions = rep(0,length(proj$idx))
+  cnt <- 1
   for (i in c(1:length(ipp))){
-    if(Bi[i] > 0){
+    if(Bi[cnt] > 0){
       involved = ifelse(proj$idx %in% ipp[[i]], 1, 0)
       numInteractions = numInteractions + involved 
     }
+    cnt <- cnt + ncol(ipp[[i]])
   }
   return(numInteractions)
 }

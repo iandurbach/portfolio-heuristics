@@ -55,23 +55,24 @@ nCV <- c(3) # number of cost violations heuristic encounters before terminating
 # set up parameters for simulation (see paper for details)
 budgets <- sum(x$cost) * round(c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),2)
 relative_budgets = round(c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),2)
-my_alphas <- c(0, 6)
+my_alpha <- c(0, 6)
 my_gamma <- c(0, 0.5)
 my_selprob <- c("equal","prop","invprop")
 interaction_pool <- c(10)
 random_nested = c(0, 1)
 
 # make a data frame with all parameter combinations
-pars = expand.grid(nproj= nproj, nCV = nCV, budget = budgets, selprob = my_selprob, alpha = my_alphas, random_nested = random_nested, interaction_pool = interaction_pool, gamma = my_gamma)
+pars = expand.grid(nproj= nproj, nCV = nCV, budget = budgets, selprob = my_selprob, alpha = my_alpha, random_nested = random_nested, interaction_pool = interaction_pool, gamma = my_gamma)
 
 # run hypothetical portfolio analysis for dataset i, for each set of parameter combinations
 # in 'pars' above. Here we just run the first 5 rows of pars, for illustration. Below we
 # only run TWO simulations at each parameter value, again just for illustration. In a final
 # simulation one must run many times at each combination.
 
+set.seed(123)
 all_res = data.frame() # set up empty data frame for results
-for(irun in 1:5){
-  for(nruns_per_irun in 1:2){
+for(irun in 34:34){
+  for(nruns_per_irun in 1:1){
     res = run_one_simulation(nproj = pars$nproj[irun], 
                              my_nCV = pars$nCV[irun],
                              my_budget = pars$budget[irun],
@@ -81,10 +82,19 @@ for(irun in 1:5){
                              interaction_pool = pars$interaction_pool[irun],
                              my_bp = my_bp,
                              my_cp = my_cp,
-                             my_gamma = c(rep(pars$gamma[irun],4)))
+                             my_gamma = c(rep(pars$gamma[irun],4)),
+                             # size of neg synergies are some multiple of pos synergies 
+                             # must be <= 0 (=0 for no negative interactions)
+                             # number of neg synergies are some multiple of pos synergies,
+                             # kind of neg interactions are as for pos, 
+                             # neg synergy projects involve a new set of projects
+                             neg_int_nint_multiplier = 1,
+                             neg_int_BC_multiplier = -0)
     
     res[3] = relative_budgets[which(budgets == pars$budget[irun])] # replace budget with relative budget
     all_res = rbind(all_res,c(pars[irun,], res)) # add results and pars used to get them 
   }
 }
 all_res
+
+

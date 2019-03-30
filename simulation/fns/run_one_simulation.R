@@ -1,7 +1,8 @@
 run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "equal", random_nested = 0, 
                               interaction_pool = 10, my_bp = NULL, my_cp = NULL, my_gamma, my_ipp = NULL, 
                               my_ipp_neg = NULL, my_BC = NULL, my_BC_neg = NULL, order_int_proj = c(5,4,3,2), 
-                              n_int_proj = c(2,6,8,10), my_beta = c(0,0,0,0), my_phi = c(0,0,0,0)){  
+                              n_int_proj = c(2,6,8,10), my_beta = c(0,0,0,0), my_phi = c(0,0,0,0),
+                              neg_int_nint_multiplier = 1, neg_int_BC_multiplier = 0){  
   ################################
   ######## enter user data
   ################################
@@ -20,16 +21,16 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   my_phi = my_phi # multiplicative effect for costs
   my_selprobs = my_selprob # one of "equal", "prop", "invprop"
   # for negatively related projects
-  my_nint_neg = 8    # size of subset of related projects
-  my_order_int_proj_neg = c(3,2) # order of interdependencies between projects
-  my_n_int_proj_neg = c(4,2) # number of interdependencies of each order
-  my_use_ipp_str_neg = 0   # 1 if use structured interdependencies, 0 for random (see below)
+  my_nint_neg = interaction_pool    # size of subset of related projects
+  my_order_int_proj_neg = order_int_proj # order of interdependencies between projects
+  my_n_int_proj_neg = pmax(1, round(neg_int_nint_multiplier * n_int_proj)) # number of interdependencies of each order
+  my_use_ipp_str_neg = random_nested   # 1 if use structured interdependencies, 0 for random (see below)
   # penalty of implementing all projects in I_k = B_k
   # B_k = bonus_add + bonus_mult * mean benefit of projects in I_k
-  my_alpha_neg = c(0,0) # additive effect for benefits
-  my_gamma_neg = c(0,0) # multiplicative effect for benefits
-  my_beta_neg = c(0,0) # additive effect for costs
-  my_phi_neg = c(0,0) # multiplicative effect for costs
+  my_alpha_neg = neg_int_BC_multiplier * my_alpha # additive effect for benefits
+  my_gamma_neg = neg_int_BC_multiplier * my_gamma # multiplicative effect for benefits
+  my_beta_neg = my_beta # additive effect for costs
+  my_phi_neg = my_phi # multiplicative effect for costs
   my_selprobs_neg = "equal" # one of "equal", "prop", "invprop"
   
   ################################
@@ -45,7 +46,7 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
     my_bp = x[,2]
     my_cp = x$cost
   }
-
+  
   
   n = length(my_bp) # number of projects
   
@@ -90,7 +91,7 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
                                           bp=my_bp,
                                           cp=my_cp,
                                           alpha=my_alpha_neg,
-                                           gamma=my_gamma_neg,
+                                          gamma=my_gamma_neg,
                                           beta=my_beta_neg,
                                           phi=my_phi_neg)
   }
@@ -150,17 +151,17 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
                          budget = my_budget)
   
   greedy_netvalue = greedy_netvalue(nCV = my_nCV,
-                         ipp=c(my_ipp,my_ipp_neg),
-                         bp  = my_bp,
-                         Bi = c(my_BC$Bi,my_BC_neg$Bi),
-                         cp = my_cp,
-                         Ci = c(my_BC$Ci,my_BC_neg$Ci),
-                         budget = my_budget)
+                                    ipp=c(my_ipp,my_ipp_neg),
+                                    bp  = my_bp,
+                                    Bi = c(my_BC$Bi,my_BC_neg$Bi),
+                                    cp = my_cp,
+                                    Ci = c(my_BC$Ci,my_BC_neg$Ci),
+                                    budget = my_budget)
   
   if(greedy_netvalue$benefit > my_optsol$benefit){browser()}
   
-
-
+  
+  
   mvp_max = mvp_max(nCV = my_nCV,
                     ipp=c(my_ipp,my_ipp_neg),
                     bp  = my_bp,
@@ -186,69 +187,69 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
                     budget = my_budget)
   
   greedy_value = greedy_value(nCV = my_nCV,
-                                    ipp=c(my_ipp,my_ipp_neg),
-                                    bp  = my_bp,
-                                    Bi = c(my_BC$Bi,my_BC_neg$Bi),
-                                    cp = my_cp,
-                                    Ci = c(my_BC$Ci,my_BC_neg$Ci),
-                                    budget = my_budget)
+                              ipp=c(my_ipp,my_ipp_neg),
+                              bp  = my_bp,
+                              Bi = c(my_BC$Bi,my_BC_neg$Bi),
+                              cp = my_cp,
+                              Ci = c(my_BC$Ci,my_BC_neg$Ci),
+                              budget = my_budget)
   
   greedy_cost = greedy_cost(nCV = my_nCV,
-                                    ipp=c(my_ipp,my_ipp_neg),
-                                    bp  = my_bp,
-                                    Bi = c(my_BC$Bi,my_BC_neg$Bi),
-                                    cp = my_cp,
-                                    Ci = c(my_BC$Ci,my_BC_neg$Ci),
-                                    budget = my_budget)
+                            ipp=c(my_ipp,my_ipp_neg),
+                            bp  = my_bp,
+                            Bi = c(my_BC$Bi,my_BC_neg$Bi),
+                            cp = my_cp,
+                            Ci = c(my_BC$Ci,my_BC_neg$Ci),
+                            budget = my_budget)
   #my_ttb$benefit
   #We normalize values, cost and budget.
   nor_bp = (my_bp - min(my_bp))/(max(my_bp)-min(my_bp))
   nor_cp = (my_cp - min(my_cp))/(max(my_cp)-min(my_cp))
   nor_budget = (my_budget - min(my_cp))/(max(my_cp)-min(my_cp))
-
+  
   my_dom = construct_dombased_portfolios(nRP = 1,
-                                       nCV = my_nCV,
-                                       ipp=c(my_ipp,my_ipp_neg),
-                                       nor_bp  = nor_bp,
-                                       bp = my_bp,
-                                       Bi = c(my_BC$Bi,my_BC_neg$Bi),
-                                       nor_cp = nor_cp,
-                                       cp = my_cp,
-                                       Ci = c(my_BC$Ci,my_BC_neg$Ci),
-                                       budget = my_budget)
+                                         nCV = my_nCV,
+                                         ipp=c(my_ipp,my_ipp_neg),
+                                         nor_bp  = nor_bp,
+                                         bp = my_bp,
+                                         Bi = c(my_BC$Bi,my_BC_neg$Bi),
+                                         nor_cp = nor_cp,
+                                         cp = my_cp,
+                                         Ci = c(my_BC$Ci,my_BC_neg$Ci),
+                                         budget = my_budget)
   
   
-
- my_dom_eval <- apply(my_dom$final_z, FUN = evaluate_z, MARGIN = 1, ipp = c(my_ipp,my_ipp_neg), bp  = my_bp, Bi = c(my_BC$Bi,my_BC_neg$Bi), 
-             cp = my_cp, Ci = c(my_BC$Ci,my_BC_neg$Ci), budget = my_budget) 
- 
- lex = construct_lex_portfolio(nCV = my_nCV,
-                               ipp=c(my_ipp,my_ipp_neg),
-                               bp  = my_bp,
-                               Bi = c(my_BC$Bi,my_BC_neg$Bi),
-                               cp = my_cp,
-                               Ci = c(my_BC$Ci,my_BC_neg$Ci),
-                               budget = my_budget)
- 
- lex_3cuesbinary = construct_lex_portfolio_3cues(nCV = my_nCV,
-                                           ipp=c(my_ipp,my_ipp_neg),
-                                           bp  = my_bp,
-                                           Bi = c(my_BC$Bi,my_BC_neg$Bi),
-                                           cp = my_cp,
-                                           Ci = c(my_BC$Ci,my_BC_neg$Ci),
-                                           budget = my_budget,
-                                           binary_num_interactions = T)
- 
- lex_3cues = construct_lex_portfolio_3cues(nCV = my_nCV,
-                                           ipp=c(my_ipp,my_ipp_neg),
-                                           bp  = my_bp,
-                                           Bi = c(my_BC$Bi,my_BC_neg$Bi),
-                                           cp = my_cp,
-                                           Ci = c(my_BC$Ci,my_BC_neg$Ci),
-                                           budget = my_budget, binary_num_interactions = F)
- 
- #my_dom_benefit = unlist(lapply(my_dom_eval, FUN= benefit))
- #order(cueValidity(cp, bp, budget))
+  
+  my_dom_eval <- apply(my_dom$final_z, FUN = evaluate_z, MARGIN = 1, ipp = c(my_ipp,my_ipp_neg), bp  = my_bp, Bi = c(my_BC$Bi,my_BC_neg$Bi), 
+                       cp = my_cp, Ci = c(my_BC$Ci,my_BC_neg$Ci), budget = my_budget) 
+  
+  lex = construct_lex_portfolio(nCV = my_nCV,
+                                ipp=c(my_ipp,my_ipp_neg),
+                                bp  = my_bp,
+                                Bi = c(my_BC$Bi,my_BC_neg$Bi),
+                                cp = my_cp,
+                                Ci = c(my_BC$Ci,my_BC_neg$Ci),
+                                budget = my_budget)
+  
+  lex_3cuesbinary = construct_lex_portfolio_3cues(nCV = my_nCV,
+                                                  ipp=c(my_ipp,my_ipp_neg),
+                                                  bp  = my_bp,
+                                                  Bi = c(my_BC$Bi,my_BC_neg$Bi),
+                                                  cp = my_cp,
+                                                  Ci = c(my_BC$Ci,my_BC_neg$Ci),
+                                                  budget = my_budget,
+                                                  binary_num_interactions = T)
+  
+  lex_3cues = construct_lex_portfolio_3cues(nCV = my_nCV,
+                                            ipp=c(my_ipp,my_ipp_neg),
+                                            bp  = my_bp,
+                                            Bi = c(my_BC$Bi,my_BC_neg$Bi),
+                                            cp = my_cp,
+                                            Ci = c(my_BC$Ci,my_BC_neg$Ci),
+                                            budget = my_budget, binary_num_interactions = F)
+  
+  #my_dom_benefit = unlist(lapply(my_dom_eval, FUN= benefit))
+  #order(cueValidity(cp, bp, budget))
   
   # my_cumdom_o1 = construct_cumdombased_portfolios(nRP = 50,
   #                                                 nCV = my_nCV,
@@ -262,7 +263,7 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   #                                                 budget = my_budget,
   #                                                 cueOrder = c(1,2))
   
-   my_cumdom_o1 <- list(final_z=0,benefit=0,cost=0,feasible=0,g=0)
+  my_cumdom_o1 <- list(final_z=0,benefit=0,cost=0,feasible=0,g=0)
   
   # my_cumdom_o2 = construct_cumdombased_portfolios(nRP = 50,
   #                                                nCV = my_nCV,
@@ -278,7 +279,7 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   
   my_cumdom_o2 <- list(final_z=0,benefit=0,cost=0,feasible=0,g=0)
   
-
+  
   # output results
   v_zopt = my_optsol$benefit  # value of optimal portfolio
   v_znad = my_nadsol$benefit  # value of nadir portfolio
