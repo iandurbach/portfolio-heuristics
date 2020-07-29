@@ -31,7 +31,7 @@ run_one_simulation = function(nproj, my_nCV, my_budget, my_alpha, my_selprob = "
   my_gamma_neg = neg_int_BC_multiplier * my_gamma # multiplicative effect for benefits
   my_beta_neg = my_beta # additive effect for costs
   my_phi_neg = my_phi # multiplicative effect for costs
-  my_selprobs_neg = "equal" # one of "equal", "prop", "invprop"
+  my_selprobs_neg = my_selprob # one of "equal", "prop", "invprop"
   
   ################################
   ######## end user data

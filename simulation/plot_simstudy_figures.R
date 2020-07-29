@@ -86,11 +86,12 @@ p = p +
   geom_point(size = 3) +
   geom_line(nadir, mapping = aes(x = budget, y = ymin), lty = 2, inherit.aes = F) +
   geom_errorbar(grouped, mapping = aes(x = budget, ymin = meanv - 2 * se, ymax = meanv + 2 * se, colour = heuristic), size = 0.4, width=0.01) +
-  annotate("text", x = 0.06, y = 640, label = "(a)", size = 12) + scale_color_manual(values = brewer.pal(9, "Set1"))
+  annotate("text", x = 0.06, y = 640, label = "(a)", size = 9) + 
+  scale_color_manual(values = brewer.pal(9, "Set1"))
 
 # few plot options, mainly resizing text
 p = p + theme_bw(base_size=24) + 
-  xlab("Budget (prop. of sum of all project costs)") + ylab("Performance") + 
+  xlab("Budget (prop. of sum of all project costs)") + ylab("Portfolio value") + 
   theme(axis.text=element_text(size=20), axis.title=element_text(size=20)) +
   theme(legend.position = "bottom", legend.text=element_text(size=18),
         legend.title=element_blank(), legend.key.size = unit(2, 'lines')) + 
@@ -147,7 +148,7 @@ p = p +
   geom_point(size = 3) +
   geom_line(nadir, mapping = aes(x = budget, y = ymin), lty = 2, inherit.aes = F) +
   geom_errorbar(grouped, mapping = aes(x = budget, ymin = meanv - 2 * se, ymax = meanv + 2 * se, colour = heuristic), size = 0.4, width=0.01) +
-  annotate("text", x = 0.06, y = 640, label = "(b)", size = 12) + scale_color_manual(values = brewer.pal(9, "Set1")[5:9])
+  annotate("text", x = 0.06, y = 640, label = "(b)", size = 9) + scale_color_manual(values = brewer.pal(9, "Set1")[5:9])
 
 # few plot options, mainly resizing text
 p = p + theme_bw(base_size=24) + 
@@ -342,11 +343,14 @@ grouped = newdata %>%
 
 grouped$heuristic = factor(grouped$heuristic, levels = heurs)
 
+grouped$my_gamma2 <- factor(grouped$my_gamma, levels = c("No Interactions","Small Interactions", "Large Interactions"),
+                            ordered = TRUE, labels = c(expression(paste("No Interactions")), expression(paste("Moderate Interactions (",gamma," = 0.5)")), expression(paste("Large Interactions (",gamma," = 1)"))))
+
 # set the main aesthetic variables
 p = ggplot(grouped, aes(x = budget, 
                         y = meanv, 
-                        colour = my_gamma,
-                        shape = my_gamma))
+                        colour = heuristic,
+                        shape = heuristic))
 
 # plot heuristic performance with error bars, and nadir performance
 p = p + 
@@ -354,7 +358,7 @@ p = p +
   geom_point(size = 3) +
   geom_errorbar(aes(x = budget, ymin = meanv - 2 * se, ymax = meanv + 2 * se),
                 size = 0.4, width=0.01) + 
-  facet_wrap(~ heuristic, nrow = 1) 
+  facet_wrap(~ my_gamma2, nrow = 1, labeller = label_parsed) 
 
 # few plot options, mainly resizing text
 p = p + theme_bw(base_size=24) + 
@@ -364,8 +368,8 @@ p = p + theme_bw(base_size=24) +
   theme(axis.text=element_text(size=20), axis.title=element_text(size=20)) +
   theme(legend.position = "bottom", legend.text=element_text(size=20),
         legend.title=element_blank(), legend.key.size = unit(3, 'lines'), strip.text = element_text(size = 14)) + 
-  scale_color_manual(labels = c("No Interactions", expression(paste(gamma," = 0.5")), expression(paste(gamma," = 1"))), values = 2:4) +
-  scale_shape_manual(labels = c("No Interactions", expression(paste(gamma," = 0.5")), expression(paste(gamma," = 1"))), values = 2:4) +
+  #scale_color_manual(labels = c("No Interactions", expression(paste(gamma," = 0.5")), expression(paste(gamma," = 1"))), values = 2:4) +
+  #scale_shape_manual(labels = c("No Interactions", expression(paste(gamma," = 0.5")), expression(paste(gamma," = 1"))), values = 2:4) +
   guides(colour = guide_legend(nrow = 1)) 
 
 
@@ -394,15 +398,17 @@ grouped = newdata %>%
   filter(heuristic %in% heurs) %>%
   group_by(heuristic, random_nested, my_selprob, budget) %>% 
   dplyr::summarize(meanv = mean(100 * normvalue),
-            se = se(100 * normvalue))
+            se = se(100 * normvalue)) %>%
+  ungroup() %>%
+  mutate(my_selprob = factor(my_selprob, levels = c("Good projects", "Poor projects", "Random")))
 
 grouped$heuristic = factor(grouped$heuristic, levels = heurs)
 
 # set the main aesthetic variables
 p = ggplot(grouped, aes(x = budget, 
                         y = meanv, 
-                        colour = my_selprob,
-                        shape = my_selprob))
+                        colour = heuristic,
+                        shape = heuristic))
 
 # plot heuristic performance with error bars, and nadir performance
 p = p +  
@@ -412,8 +418,8 @@ p = p +
                 mapping = aes(x = budget, 
                               ymin = meanv - 2 * se, 
                               ymax = meanv + 2 * se,
-                              colour = my_selprob), size = 0.4, width=0.01) +
-  facet_grid(random_nested ~ heuristic, scales = "free") 
+                              colour = heuristic), size = 0.4, width=0.01) +
+  facet_grid(random_nested ~ my_selprob, scales = "free") 
 
 # few plot options, mainly resizing text
 p = p + theme_bw(base_size=24) + 
@@ -422,7 +428,7 @@ p = p + theme_bw(base_size=24) +
   theme(axis.text=element_text(size=20), axis.title=element_text(size=20)) +
   theme(legend.position = "bottom", legend.text=element_text(size=20), strip.text = element_text(size = 14),
         legend.title=element_blank(), legend.key.size = unit(3, 'lines')) + 
-  guides(colour = guide_legend(nrow = 1))
+  guides(colour = guide_legend(nrow = 1)) 
 
 p
 
